@@ -435,13 +435,14 @@ void print_all_users()
 
 void add_user(string user,string pass,bool is_agent)
 {
-	ofstream DB;
-	DB.open("DB.csv",ios::app);
 	if(is_agent)
-		DB << user << " " << pass <<" "<<"Agent" << endl;
+		ofstream DB_Costumers;
+		DB_Costumers.open("DB_Costumers.txt", ios::app);
+		DB_Costumers << user << " " << pass <<" "<<"Agent" << endl;
+		DB_Costumers.close();
 	else
-		DB << user << " " << pass << " " << "Customer" << endl;
-	DB.close();
+		DB_Agents << user << " " << pass << " " << "Customer" << endl;
+
 
 }
 

@@ -1,0 +1,5 @@
+﻿  Source.cpp
+C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Test\Test\Source.cpp(19,27): error C2065: 'hConsole': undeclared identifier
+C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Test\Test\Source.cpp(19,3): error C3861: 'SetConsoleTextAttribute': identifier not found
+C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Test\Test\Source.cpp(20,3): error C2065: 'cout': undeclared identifier
+C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Test\Test\Source.cpp(20,47): error C2065: 'endl': undeclared identifier
