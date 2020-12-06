@@ -18,27 +18,30 @@ typedef struct {
 	string userName; // keep user name 
 	string firstName; // keep the name of customer
 	string lastName;
-	long passport; // keep passport number of customer
+	string passport; // keep passport number of customer
+	string email; // keep email address
+	string phoneNumber; // keep phone number 
 	gender gen; // keep the gender of customer
 	int age; // keep the age of customer
-	string email; // keep email address
-	long phoneNumber; // keep phone number 
-	bool agent = false;
+	bool agent ;
 }User;
 
-void sign();
+bool sign_menu();
 void sign_in();
 void sign_up();
 bool strongPassword(string);
 void writeUserToFile(User);
+bool ExistingUser(string);
+bool userCorrecrPass(string, string);
+bool passportCheck(string);
 
 int main() {
-	sign(); // login to system
+	while (sign_menu()) { system("CLS"); } //Opening sign in menu until it returns false (clears screan in between)
 	return 1;
 }
 
 // login function
-void sign() {
+bool sign_menu() {
 	// welcome
 	system("CLS");
 	printf("\t\t88888888888                                888  .d8888b.  888 d8b          888     \n");
@@ -58,14 +61,19 @@ void sign() {
 	switch (choose)
 	{
 	case 1:
-		sign_up();
+		system("CLS");
+		sign_in();
+		return true;
 		break;
 	case 2:
-		sign_in();
+		system("CLS");
+		sign_up();
+		return true;
 		break;
 	case 3:
-		printf("goodbye!! hope to see you soon:)\n");
-		return;
+		system("CLS");
+		printf("\n\n\n\n\n\n\t\t\t\t\goodbye!! hope to see you soon:)\n");
+		return false;
 		break;
 	default:
 		printf("bad input\n");
@@ -76,52 +84,139 @@ void sign() {
 // sign-in function
 void sign_in() {
 	string user, password;
-	cout << "Enter user name" << endl;
-	cin >> user;
-	cout << "Enter password" << endl;
-	cin >> password;
+	do {
+		cout << "\n\n\n\t\t\tEnter user name\n" << endl;
+		cin >> user;
+		cout << "\n\n\t\t\tEnter password\n" << endl;
+		cin >> password;
+	} while (!userCorrecrPass(user, password));
 	// cheak info
 }
 
-// sign-up function
-void sign_up() {
-	bool check; // keep the return value from check password
-	User use;
-	cout << "Enter user name" << endl;
-	cin >> use.userName;
-	cout << "Enter password" << endl;
-	cin >> use.password;
-	cout << "Enter your first name" << endl;
-	cin >> use.firstName;
-	cout << "Enter your last name" << endl;
-	cin >> use.lastName;
-	cout << "Enter your passport" << endl;
-	cin >> use.passport;
-	cout << "Enter your age" << endl;
-	cin >> use.age;
-	int g;
-	do {
-		cout << "Enter gender: 1-male, 2-female" << endl;
-		cin >> g;
-		if (g == 1)
-			use.gen = M;
-		else if (g == 2)
-			use.gen = F;
-		else
-			cout << "bad input";
-	} while (g!=1 && g!=2);
-	cout << "Enter your email" << endl;
-	cin >> use.email;
-	cout << "Enter your phone number" << endl;
-	cin >> use.phoneNumber;
-	writeUserToFile(use);
+//// old sign-up function
+//void sign_up() {
+//	bool check; // keep the return value from check password
+//	User use;
+//	do {
+//		cout << "\n\n\n\t\t\tEnter user name\n\t\t\t    ";
+//		cin >>use.userName;
+//		if (ExistingUser(use.userName))
+//			cout << "\n\n\n\tThis user already exist.\a";
+//	} while (ExistingUser(use.userName));
+//	do {
+//		cout << "\n\n\t\t\tEnter password\n\t\t\t    ";
+//		cin >> use.password;
+//		if (!strongPassword(use.password))
+//			cout << "\n\n\nThis password is not strong enough (Need to include an upper,lower and numiric character and 8 or more charecters).\a\n";
+//	} while (!strongPassword(use.password));
+//	cout << "\n\n\t\tEnter your first name\n\t\t\t    ";
+//	cin >> use.firstName;
+//	cout << "\n\n\t\t\tEnter your last name\n\t\t\t    ";
+//	cin >> use.lastName;
+//	cout << "\n\n\t\t\tEnter your passport\n\t\t\t    ";
+//	cin >> use.passport;
+//	cout << "\n\n\t\t\tEnter your age\n\t\t\t    ";
+//	cin >> use.age;
+//	int g;
+//	do {
+//		cout << "\n\n\t\t\tEnter gender: 1-male, 2-female\n\t\t\t    ";
+//		cin >> g;
+//		if (g == 1)
+//			use.gen = M;
+//		else if (g == 2)
+//			use.gen = F;
+//		else
+//			cout << "\n\n\t\t\tbad input\t\t\t";
+//	} while (g!=1 && g!=2);
+//	cout << "\n\n\t\t\tEnter your email\n\t\t\t    ";
+//	cin >> use.email;
+//	cout << "\n\n\t\t\tEnter your phone number\n\t\t\t    ";
+//	cin >> use.phoneNumber;
+//	use.agent = false;
+//	writeUserToFile(use);
+//
+//}
+
+
+bool ExistingUser(string username)
+{
+	ifstream DB_accounts;
+	DB_accounts.open("DB_accounts.txt");
+
+	if (DB_accounts.fail())
+	{
+		cerr << "\n\n\n \t\t\tERROR: The file couldn't be opened.\a" << endl;
+	}
+
+	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber,seperator;
+
+	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
+	while (!DB_accounts.eof())
+	while (!DB_accounts.eof())
+	{
+		if (UserName == username)
+			return true;
+		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+	}
+	DB_accounts.close();
+	return false;
 }
 
+//void writeUserToFile(User use) old
+//{
+//	fstream DB_accounts;
+//	DB_accounts.open("DB_accounts.txt", ios::app);
+//	if (use.agent)
+//	{
+//		DB_accounts << use.userName << " " << use.password << " " << "Agent" << endl;
+//	}
+//	else
+//		DB_accounts << use.userName << " " << use.password << " " << "Customer" << endl;
+//	DB_accounts.close();
+//}
 
-void writeUserToFile(User use) {
-	
+void writeUserToFile(User use)//entering data from struct to txt file
+{
+
+	fstream DB_accounts;
+	DB_accounts.open("DB_accounts.txt", ios::app);
+
+	DB_accounts << (use.agent ? "Agent: ":"Customer: ") << use.firstName << " " << use.lastName << " " << use.userName << " " << use.password << " " << use.passport << " " << (use.gen ? "M" : "F") << " " << use.age << " " << use.email << " " << use.phoneNumber << endl;
+	DB_accounts << "~~==============================================================================~~" << endl;
+
+	DB_accounts.close();
 }
 
+bool userCorrecrPass(string username, string password)
+{
+	ifstream DB_accounts;
+	DB_accounts.open("DB_accounts.txt");
+
+	if (DB_accounts.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+
+	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber,seperator;
+
+	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
+	while (!DB_accounts.eof())
+	{
+		if (UserName == username)
+			if (PW == password)
+				return true;
+			else
+			{
+				cerr << "\n\n\n\t\t\tThis password is incorrect.\a\n\n\t\t\t";
+				return false;
+			}
+		
+		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
+	}
+	cerr << "\n\n\n \t\t\tThis account dosen't exist.\a\n\n\t\t\t";
+	DB_accounts.close();
+	return false;
+}
 
 // function for aprove strong password
 bool strongPassword(string pass)
@@ -135,7 +230,65 @@ bool strongPassword(string pass)
 				upper = true;
 			else if (pass[i] <= 'z' && pass[i] >= 'a') // check if there is minimum one lower letter 
 				lower = true;
-			else if (pass[i] <= '0' && pass[i] >= '9') //check if there is minimum one digit
+			else if (pass[i] <= '9' && pass[i] >= '0') //check if there is minimum one digit
 				number = true;
 	return upper && lower && number;
+}
+
+void sign_up() {//new sign up
+	bool check; // keep the return value from check password
+	User use;
+	do {
+		//must enter a new username to continue
+		cout << "\n\n\n\t\t\tEnter user name\n\t\t\t    ";
+		cin >> use.userName;
+		if (ExistingUser(use.userName))
+			cout << "\n\n\n\tThis user already exist.\a";
+	} while (ExistingUser(use.userName));
+	do {
+		//must enter a valid password
+		cout << "\n\n\t\t\tEnter password\n\t\t\t    ";
+		cin >> use.password;
+		if (!strongPassword(use.password))
+			cout << "\n\n\nThis password is not strong enough (Need to include an upper,lower and numiric character and 8 or more charecters).\a\n";
+	} while (!strongPassword(use.password));
+	cout << "\n\n\t\tEnter your first name\n\t\t\t    ";
+	cin >> use.firstName;
+	cout << "\n\n\t\t\tEnter your last name\n\t\t\t    ";
+	cin >> use.lastName;
+	do {
+		//must enter 9 characters for valid passport
+		cout << "\n\n\t\t\tEnter your passport\n\t\t\t    ";
+		cin >> use.passport;
+		if (passportCheck(use.passport))
+			cout << "\n\n\n\tThis passport in not valid, Please enter passport with minimum 9 charecters.\a";
+	} while (passportCheck(use.passport));//passport check
+	cout << "\n\n\t\t\tEnter your age\n\t\t\t    ";
+	cin >> use.age;
+	int g;
+	do {
+		cout << "\n\n\t\t\tEnter gender: 1-male, 2-female\n\t\t\t    ";
+		cin >> g;
+		if (g == 1)
+			use.gen = M;
+		else if (g == 2)
+			use.gen = F;
+		else
+			cout << "\n\n\t\t\tbad input\t\t\t";
+	} while (g != 1 && g != 2);
+	cout << "\n\n\t\t\tEnter your email\n\t\t\t    ";
+	cin >> use.email;
+	cout << "\n\n\t\t\tEnter your phone number\n\t\t\t    ";
+	cin >> use.phoneNumber;
+	use.agent = false;
+	writeUserToFile(use);
+
+}
+
+bool passportCheck(string passport) {
+	if (passport.length() >= 8)
+	{
+		return true;
+	}
+	return false;
 }
