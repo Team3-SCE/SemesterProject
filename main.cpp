@@ -6,8 +6,8 @@
 #include <string>
 using namespace std;
 
-#define ADMIN hmmsly
-#define PASS 5478
+#define ADMIN "hmmsly"
+#define PASS "5478"
 
 // define gender
 enum  gender { F, M };
@@ -23,7 +23,7 @@ typedef struct {
 	string phoneNumber; // keep phone number 
 	gender gen; // keep the gender of customer
 	int age; // keep the age of customer
-	bool agent ;
+	bool agent;
 }User;
 
 bool sign_menu();
@@ -34,8 +34,11 @@ void writeUserToFile(User);
 bool ExistingUser(string);
 bool userCorrecrPass(string, string);
 bool passportCheck(string);
-
+void PrintUsersToAdmin();
+void Add_Agent();
 int main() {
+	Add_Agent();
+	PrintUsersToAdmin();
 	while (sign_menu()) { system("CLS"); } //Opening sign in menu until it returns false (clears screan in between)
 	return 1;
 }
@@ -57,7 +60,7 @@ bool sign_menu() {
 	printf("\t\t\t\t\t3-   Exit\n\n");
 	// start system
 	int choose;
-	cin>>choose;
+	cin >> choose;
 	switch (choose)
 	{
 	case 1:
@@ -85,57 +88,18 @@ bool sign_menu() {
 void sign_in() {
 	string user, password;
 	do {
-		cout << "\n\n\n\t\t\tEnter user name\n" << endl;
+		cout << "\n\n\n\t\t\tEnter username\n" << endl;
 		cin >> user;
 		cout << "\n\n\t\t\tEnter password\n" << endl;
 		cin >> password;
 	} while (!userCorrecrPass(user, password));
-	// cheak info
+	// check info
+	if (user==ADMIN && password == PASS)
+	{
+		//admin menu-func
+	}
 }
 
-//// old sign-up function
-//void sign_up() {
-//	bool check; // keep the return value from check password
-//	User use;
-//	do {
-//		cout << "\n\n\n\t\t\tEnter user name\n\t\t\t    ";
-//		cin >>use.userName;
-//		if (ExistingUser(use.userName))
-//			cout << "\n\n\n\tThis user already exist.\a";
-//	} while (ExistingUser(use.userName));
-//	do {
-//		cout << "\n\n\t\t\tEnter password\n\t\t\t    ";
-//		cin >> use.password;
-//		if (!strongPassword(use.password))
-//			cout << "\n\n\nThis password is not strong enough (Need to include an upper,lower and numiric character and 8 or more charecters).\a\n";
-//	} while (!strongPassword(use.password));
-//	cout << "\n\n\t\tEnter your first name\n\t\t\t    ";
-//	cin >> use.firstName;
-//	cout << "\n\n\t\t\tEnter your last name\n\t\t\t    ";
-//	cin >> use.lastName;
-//	cout << "\n\n\t\t\tEnter your passport\n\t\t\t    ";
-//	cin >> use.passport;
-//	cout << "\n\n\t\t\tEnter your age\n\t\t\t    ";
-//	cin >> use.age;
-//	int g;
-//	do {
-//		cout << "\n\n\t\t\tEnter gender: 1-male, 2-female\n\t\t\t    ";
-//		cin >> g;
-//		if (g == 1)
-//			use.gen = M;
-//		else if (g == 2)
-//			use.gen = F;
-//		else
-//			cout << "\n\n\t\t\tbad input\t\t\t";
-//	} while (g!=1 && g!=2);
-//	cout << "\n\n\t\t\tEnter your email\n\t\t\t    ";
-//	cin >> use.email;
-//	cout << "\n\n\t\t\tEnter your phone number\n\t\t\t    ";
-//	cin >> use.phoneNumber;
-//	use.agent = false;
-//	writeUserToFile(use);
-//
-//}
 
 
 bool ExistingUser(string username)
@@ -148,32 +112,20 @@ bool ExistingUser(string username)
 		cerr << "\n\n\n \t\t\tERROR: The file couldn't be opened.\a" << endl;
 	}
 
-	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber,seperator;
+	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
 
-	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
+	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
 	while (!DB_accounts.eof())
-	while (!DB_accounts.eof())
-	{
-		if (UserName == username)
-			return true;
-		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
-	}
+		while (!DB_accounts.eof())
+		{
+			if (UserName == username)
+				return true;
+			DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+		}
 	DB_accounts.close();
 	return false;
 }
 
-//void writeUserToFile(User use) old
-//{
-//	fstream DB_accounts;
-//	DB_accounts.open("DB_accounts.txt", ios::app);
-//	if (use.agent)
-//	{
-//		DB_accounts << use.userName << " " << use.password << " " << "Agent" << endl;
-//	}
-//	else
-//		DB_accounts << use.userName << " " << use.password << " " << "Customer" << endl;
-//	DB_accounts.close();
-//}
 
 void writeUserToFile(User use)//entering data from struct to txt file
 {
@@ -181,7 +133,7 @@ void writeUserToFile(User use)//entering data from struct to txt file
 	fstream DB_accounts;
 	DB_accounts.open("DB_accounts.txt", ios::app);
 
-	DB_accounts << (use.agent ? "Agent: ":"Customer: ") << use.firstName << " " << use.lastName << " " << use.userName << " " << use.password << " " << use.passport << " " << (use.gen ? "M" : "F") << " " << use.age << " " << use.email << " " << use.phoneNumber << endl;
+	DB_accounts << (use.agent ? "Agent: " : "Customer: ") << use.firstName << " " << use.lastName << " " << use.userName << " " << use.password << " " << use.passport << " " << (use.gen ? "M" : "F") << " " << use.age << " " << use.email << " " << use.phoneNumber << endl;
 	DB_accounts << "~~==============================================================================~~" << endl;
 
 	DB_accounts.close();
@@ -197,9 +149,9 @@ bool userCorrecrPass(string username, string password)
 		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
 	}
 
-	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber,seperator;
+	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
 
-	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
+	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
 	while (!DB_accounts.eof())
 	{
 		if (UserName == username)
@@ -210,8 +162,8 @@ bool userCorrecrPass(string username, string password)
 				cerr << "\n\n\n\t\t\tThis password is incorrect.\a\n\n\t\t\t";
 				return false;
 			}
-		
-		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
+
+		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
 	}
 	cerr << "\n\n\n \t\t\tThis account dosen't exist.\a\n\n\t\t\t";
 	DB_accounts.close();
@@ -260,9 +212,9 @@ void sign_up() {//new sign up
 		//must enter 9 characters for valid passport
 		cout << "\n\n\t\t\tEnter your passport\n\t\t\t    ";
 		cin >> use.passport;
-		if (passportCheck(use.passport))
+		if (!passportCheck(use.passport))
 			cout << "\n\n\n\tThis passport in not valid, Please enter passport with minimum 9 charecters.\a";
-	} while (passportCheck(use.passport));//passport check
+	} while (!passportCheck(use.passport));//passport check
 	cout << "\n\n\t\t\tEnter your age\n\t\t\t    ";
 	cin >> use.age;
 	int g;
@@ -292,3 +244,66 @@ bool passportCheck(string passport) {
 	}
 	return false;
 }
+//need to send to maor
+void PrintUsersToAdmin() {
+/* ifstream file("DB_accounts.txt");
+	cout << file.rdbuf();; print all the DB the way it is*/
+	ifstream DB_accounts;
+	DB_accounts.open("DB_accounts.txt", ios::out);//open the file for output
+	int i = 0;
+	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
+	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+
+	while(!DB_accounts.eof())	{
+		cout <<"User number #"<< i + 1 <<":"<<endl;
+		//printing values from DB_accounts
+		cout << "account type:" << (is_agent == "Agent:"?"Agent":"Customer")<<"\n\tFirst Name: "<<FirstName << "\tLast Name:" << lastName <<"\tUserName:" << UserName<<"\n\tPassword:"<< PW<<"\tPastport:"<<PP<<"\tGender:"<<Gender<<"\n\tAge:"<<Age<<"\tEmail:"<<Email<<"\tPhone number:"<< PhoneNumber<<"\n"<< seperator<<endl;
+		//getting data for cout
+		++i;
+		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+	}
+	DB_accounts.close();
+
+}
+
+void Add_Agent() {
+	PrintUsersToAdmin();
+	int choice,i=0;
+	cout << "Which user do you wish to make as Agent? (0 to cancel)" << endl;
+	cin >> choice;
+	if (choice == 0)
+		return;
+	choice -= 1;
+	string agent= "Agent: ";
+	string customer = "Customer: ";
+	ifstream DB_accounts;
+	ofstream temp;
+
+	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
+
+	DB_accounts.open("DB_accounts.txt",ios::out);
+	temp.open("temp.txt", ios::app);
+	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+
+	while (!DB_accounts.eof()) {
+		if (i==choice)
+		{
+			is_agent = agent;	
+			temp << is_agent << FirstName << " " << lastName << " " << UserName << " " << PW << " " << PP << " " << Gender << " " << Age << " " << Email << " " << PhoneNumber << "\n"<<  seperator<< endl;
+
+		}
+		else
+		{
+			temp << is_agent << " " << FirstName << " " << lastName << " " << UserName << " " << PW << " " << PP << " " << Gender << " " << Age << " " << Email << " " << PhoneNumber << "\n"<< seperator<< endl;
+
+		}
+		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+		++i;
+	}
+	temp.close();
+	DB_accounts.close();
+
+	remove("DB_accounts.txt");
+	rename("temp.txt", "DB_accounts.txt");
+}
+
