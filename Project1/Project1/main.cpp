@@ -1,11 +1,15 @@
 // team 3
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
 #include <fstream> // files
 #include <cstring> // string
 #include <string>
+#include <windows.h>
+#include <time.h>
 
 using namespace std;
+
 
 #define ADMIN_USER "admin"
 #define ADMIN_PASS "0000"
@@ -27,32 +31,64 @@ typedef struct {
 	gender gen; // keep the gender of customer
 	int age; // keep the age of customer
 	bool agent ;
+	bool admin ;
 }User;
 
 bool sign_menu();
-login_type sign_in();
+login_type sign_in(User*);
 void sign_up();
 bool strongPassword(string);
 void writeUserToFile(User);
 bool ExistingUser(string);
-bool userCorrecrPass(string, string);
+bool userCorrecrPass(string, string, User*);
 bool passportCheck(string);
 login_type check_usertype(string);
-int Admin_Menu();
-int Agent_Menu();
-int Customer_Menu();
+int Admin_Menu(User active_user);
+int Agent_Menu(User active_user);
+int Customer_Menu(User active_user);
 void PrintUsersMassages();
 void ContactWithAgent(User);
+void print_active_user_message(User);
 
 int main() {
+	cout << "\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t\t\t\t\t";
+	for (int i =0;i<3;i++) {
+
+		std::cout << "\b\b\b\b\b\b\b\b\b\bLoading   " << std::flush;
+		Sleep(100);
+		std::cout << "\b\b\b\b\b\b\b\b\b\bLOading   " << std::flush;
+		Sleep(100);
+		std::cout << "\b\b\b\b\b\b\b\b\b\bLoAding   " << std::flush;
+		Sleep(100);
+		std::cout << "\b\b\b\b\b\b\b\b\b\bLoaDing   " << std::flush;
+		Sleep(100);
+		std::cout << "\b\b\b\b\b\b\b\b\b\bLoadIng   " << std::flush;
+		Sleep(100);
+		std::cout << "\b\b\b\b\b\b\b\b\b\bLoadiNg   " << std::flush;
+		Sleep(100);
+		std::cout << "\b\b\b\b\b\b\b\b\b\bLoadinG   " << std::flush;
+		Sleep(100);
+		std::cout << "\b\b\b\b\b\b\b\b\b\bLoading.  " << std::flush;
+		Sleep(100);
+		std::cout << "\b\b\b\b\b\b\b\b\b\bLoading.. " << std::flush;
+		Sleep(100);
+		std::cout << "\b\b\b\b\b\b\b\b\b\bLoading..." << std::flush;
+		Sleep(100);
+	}
 	while (sign_menu()) { system("CLS"); } //Opening sign in menu until it returns false (clears screan in between)
 	return 1;
 }
 
 // login function
 bool sign_menu() {
+
+	User active_user;
+	int choose;
+	active_user.firstName = active_user.lastName = "";
+	
 	// welcome
 	system("CLS");
+	print_active_user_message(active_user);
 	printf("\t\t88888888888                                888  .d8888b.  888 d8b          888     \n");
 	printf("\t\t    888                                    888 d88P  Y88b 888 Y8P          888     \n");
 	printf("\t\t    888                                    888 888    888 888              888     \n");
@@ -65,8 +101,6 @@ bool sign_menu() {
 	printf("\t\t\t\t\t2-   Sign Up\n\n");
 	printf("\t\t\t\t\t3-   Exit\n\n\t\t\t");
 	// start system
-	int choose;
-	User active_user;
 	cin>>choose;
 	switch (choose)
 	{
@@ -74,14 +108,14 @@ bool sign_menu() {
 		
 		system("CLS");
 
-		switch (sign_in()) //Opening the Sign_in menu and gives what kind of user is being used. 
+		switch (sign_in(&active_user)) //Opening the Sign_in menu and gives what kind of user is being used. 
 		{
 		case admin_login:
-			Admin_Menu();
-			system("pause");
+			Admin_Menu(active_user);
+			//Here will be a switch case with the functions of the admin menu
 			break;
 		case agent_login:
-			switch (Agent_Menu())
+			switch (Agent_Menu(active_user))
 			{
 			case 1:
 				break;
@@ -94,14 +128,11 @@ bool sign_menu() {
 			case 4:
 				break;
 			}
-			system("pause");
 			break;
 		case customer_login:
-			Customer_Menu();
-			system("pause");
+			Customer_Menu(active_user);
 			break;
 		case no_login:
-			system("pause");
 			break;
 		}
 
@@ -117,7 +148,8 @@ bool sign_menu() {
 
 	case 3://quit
 		system("CLS");
-		printf("\n\n\n\n\n\n\t\t\t\tGoodbye!! hope to see you soon:)\n");
+		printf("\n\n\n\n\n\n\t\t\t  Goodbye!! we hope to see you again soon :)\n\n\n\n\n\t\t\t\t");
+		system("pause");
 		return false;
 		break;
 	default:
@@ -127,7 +159,7 @@ bool sign_menu() {
 }
 
 // sign-in function
-login_type sign_in() 
+login_type sign_in(User* active_user) 
 {
 	string user, password;
 	cout << "\n\n\n\t\t\t\t\tEnter user name\n\n\t\t\t\t\t" ;
@@ -136,8 +168,13 @@ login_type sign_in()
 	cin >> password;
 	cout << "\n\n\t\t\t\t\t";
 	if (user == ADMIN_USER && password == ADMIN_PASS)
+	{
+		active_user->admin = true;
+		active_user->firstName = "";
+		active_user->lastName = "";
 		return admin_login;
-	if (!userCorrecrPass(user, password))
+	}
+	if (!userCorrecrPass(user, password,active_user))
 		return no_login;
 	return check_usertype(user);
 	// cheak info
@@ -207,7 +244,7 @@ void writeUserToFile(User use)//entering data from struct to txt file
 	DB_accounts.close();
 }
 
-bool userCorrecrPass(string username, string password)
+bool userCorrecrPass(string username, string password,User* active_user)
 {
 	ifstream DB_accounts;
 	DB_accounts.open("DB_accounts.txt");
@@ -217,21 +254,36 @@ bool userCorrecrPass(string username, string password)
 		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
 	}
 
-	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber,seperator;
+	string is_agent, FirstName, LastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber,seperator;
 
-	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
+	DB_accounts >> is_agent >> FirstName >> LastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
 	while (!DB_accounts.eof())
 	{
 		if (UserName == username)
 			if (PW == password)
+			{
+				//if the user password is correct change it to be the active user
+
+				active_user->agent = (is_agent == "Customer:" ? false : true);
+				active_user->firstName = FirstName;
+				active_user->lastName = LastName;
+				active_user->userName = UserName;
+				active_user->password = PW;
+				active_user->passport = PP;
+				active_user->gen= (Gender == "M" ? M : F);
+				active_user->age = stoi(Age);
+				active_user->email = Email;
+				active_user->phoneNumber = PhoneNumber;
+
 				return true;
+			}
 			else
 			{
-				cerr << "\n\n\n\t\t\tThis password is incorrect.\a\n\n\t\t\t";
+				cerr << "\n\n\n\n\t\t\t\tThis password is incorrect.\a\n\n\t\t\t";
 				return false;
 			}
 		
-		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
+		DB_accounts >> is_agent >> FirstName >> LastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
 	}
 	cerr << "\n\n\n \t\t\tThis account dosen't exist.\a\n\n\t\t\t";
 	DB_accounts.close();
@@ -313,7 +365,7 @@ bool passportCheck(string passport) {
 	return false;
 }
 
-int Admin_Menu()
+int Admin_Menu(User active_user)
 {
 	int choice;
 	system("CLS");
@@ -325,38 +377,43 @@ int Admin_Menu()
 	printf("\t\t\t\t\t4-   Confirmation of customers orders.\n\n");
 	printf("\t\t\t\t\t5-   Show User DB.\n\n");
 	printf("\t\t\t\t\t6-   Make a user an agent.\n\n");
-	printf("\t\t\t\t\t7-   Exit\n\n\t\t\t");
+	printf("\t\t\t\t\t7-   Exit\n\n\t\t\t\t");
 	cin >> choice;
+	cout << "\n\n\t\t\t\t";
 	return choice;
 }
 
-int Agent_Menu()
+int Agent_Menu(User active_user)
 {
 	int choice;
 	system("CLS");
+	print_active_user_message(active_user);
 	printf("\n\n\n\t\t\t\t\tHello Agent\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   Lead list.\n\n");
 	printf("\t\t\t\t\t2-   Add/delete packages from the database.\n\n");
 	printf("\t\t\t\t\t3-   Respond to customer messages.\n\n");
 	printf("\t\t\t\t\t4-   Confirmation of customers orders.\n\n");
-	printf("\t\t\t\t\t5-   Exit\n\n\t\t\t");
+	printf("\t\t\t\t\t5-   Exit\n\n\t\t\t\t");
 	cin >> choice;
+	cout << "\n\n\t\t\t\t";
 	return choice;
 }
 
 
-int Customer_Menu()
+int Customer_Menu(User active_user)
 {
 	int choice;
 	system("CLS");
+	print_active_user_message(active_user);
 	printf("\n\n\n\t\t\t\t\tHello Customer\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   Search for a vication package.\n\n");
 	printf("\t\t\t\t\t2-   Show status of package orders.\n\n");
 	printf("\t\t\t\t\t3-   Get in contact with an agent.\n\n");
-	printf("\t\t\t\t\t4-   Exit\n\n\t\t\t");
+	printf("\t\t\t\t\t4-   Exit\n\n\t\t\t\t");
 	cin >> choice;
+	cout << "\n\n\t\t\t\t";
 	return choice;
 }
 
@@ -364,9 +421,9 @@ int Customer_Menu()
 void PrintUsersMassages() {
 	ifstream DB_massages;
 	DB_massages.open("DB_massages.txt");
-
 	int i = 0;
 	string word;
+	system("CLS");
 	DB_massages >> word;
 	if (!DB_massages.eof()) {
 		while (!DB_massages.eof()) {
@@ -392,9 +449,35 @@ void ContactWithAgent(User use) {
 	{
 		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
 	}
-	cout << "write your massage to agent\n";
+	cout << "\n\n\n\t\t\tLeave a massage for a travel agent:\n\n\n\t\t\t";
 	cin >> mass; // check
 	DB_massages <<"not_taken_care_of"<< use.email << " " << use.phoneNumber << " " << mass << endl;
 	DB_massages << "~~==============================================================================~~" << endl;
 	DB_massages.close();
+}
+
+void print_active_user_message(User active_user) 
+{
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+	//cout << "its " << tm.tm_hour << " aclock"<<" ";
+	string day_greeting;
+	if(tm.tm_hour >= 0 && tm.tm_hour < 12) 
+	{
+		day_greeting = "Good Morning";
+	}
+	else if (tm.tm_hour >= 12 && tm.tm_hour < 16) 
+	{
+		day_greeting = "Good Afternoon";
+	}
+	else if (tm.tm_hour >= 16 && tm.tm_hour < 21) 
+	{
+		day_greeting = "Good Evening";
+	}
+	else if (tm.tm_hour >= 21 && tm.tm_hour < 24)
+	{
+		day_greeting = "Good Night";
+	}
+	
+	cout <<"\n\t"<< day_greeting << " " << active_user.firstName << " " << active_user.lastName<<endl<<endl;
 }
