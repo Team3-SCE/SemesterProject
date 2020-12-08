@@ -17,7 +17,7 @@ using namespace std;
 // define gender
 enum  gender { F, M };
 
-enum  login_type { admin_login , agent_login, customer_login, no_login};
+enum  login_type { admin_login, agent_login, customer_login, no_login };
 
 //user struct
 typedef struct {
@@ -30,13 +30,14 @@ typedef struct {
 	string phoneNumber; // keep phone number 
 	gender gen; // keep the gender of customer
 	int age; // keep the age of customer
-	bool agent ;
-	bool admin ;
+	bool agent;
+	bool admin;
 }User;
 
 bool sign_menu();
 login_type sign_in(User*);
 void sign_up();
+void vacation_search();
 bool strongPassword(string);
 void writeUserToFile(User);
 bool ExistingUser(string);
@@ -49,10 +50,17 @@ int Customer_Menu(User active_user);
 void PrintUsersMassages();
 void ContactWithAgent(User);
 void print_active_user_message(User);
+void PrintUsersToAdmin();
+void Add_Agent();
+void Add_Or_Delete_Packages();
+void Add_Packages();
+void print_packages();
+void Delete_Packages();
+
 
 int main() {
 	cout << "\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t\t\t\t\t";
-	for (int i =0;i<3;i++) {
+	for (int i = 0;i < 3;i++) {
 
 		std::cout << "\b\b\b\b\b\b\b\b\b\bLoading   " << std::flush;
 		Sleep(100);
@@ -85,7 +93,7 @@ bool sign_menu() {
 	User active_user;
 	int choose;
 	active_user.firstName = active_user.lastName = "";
-	
+
 	// welcome
 	system("CLS");
 	print_active_user_message(active_user);
@@ -101,36 +109,122 @@ bool sign_menu() {
 	printf("\t\t\t\t\t2-   Sign Up\n\n");
 	printf("\t\t\t\t\t3-   Exit\n\n\t\t\t");
 	// start system
-	cin>>choose;
+	cin >> choose;
+	bool flag = true;
+
 	switch (choose)
 	{
 	case 1://Sign in
-		
+		flag = true;
 		system("CLS");
-
 		switch (sign_in(&active_user)) //Opening the Sign_in menu and gives what kind of user is being used. 
 		{
 		case admin_login:
-			Admin_Menu(active_user);
+			do
+			{
+				//switch case for admin with do while
+
+				switch (Admin_Menu(active_user)) {
+				case 1:
+					switch (Agent_Menu(active_user))
+					{
+					case 1:
+						//lead list- all the customers in DB 
+						break;
+					case 2:
+						//add and delete packages from DB
+						Add_Or_Delete_Packages();//working
+						break;
+					case 3://need to fix
+						//reply to customers
+						PrintUsersMassages();
+						system("pause");
+						break;
+					case 4://need to fix
+						//confirm orders for customers
+						break;
+					case 5:
+						flag = false;
+						break;
+					default:
+						cout << "invalid choice" << endl;
+						break;
+					}
+					break;
+				case 2:
+					Add_Agent();
+					break;
+				case 3:
+					flag = false;
+					break;
+				default:
+					cout << "invalid choice" << endl;
+					break;
+				}
+
+			} while (flag);
 			//Here will be a switch case with the functions of the admin menu
 			break;
 		case agent_login:
-			switch (Agent_Menu(active_user))
+			//swich case for agent menu with do while
+			do
 			{
-			case 1:
-				break;
-			case 2:
-				break;
-			case 3:
-				PrintUsersMassages();
-				system("pause");
-				break;
-			case 4:
-				break;
-			}
+				switch (Agent_Menu(active_user))
+				{
+				case 1:
+					//lead list- all the customers in DB 
+					break;
+				case 2:
+					//add and delete packages from DB
+					Add_Or_Delete_Packages();
+					break;
+				case 3:
+					//reply to customers
+					PrintUsersMassages();
+					system("pause");
+					break;
+				case 4:
+					//confirm orders for customers
+					break;
+				case 5:
+					flag = false;
+					break;
+				default:
+					cout << "invalid choice" << endl;
+					break;
+				}
+
+			} while (flag);
+
 			break;
+
 		case customer_login:
-			Customer_Menu(active_user);
+			//switch case for customer menu with do while
+			do
+			{
+				switch (Customer_Menu(active_user))
+				{
+				case 1:
+					//vacations search
+					//vacation_search();
+					break;
+				case 2:
+					//show status for packages orders
+					break;
+				case 3:
+					//get in contact with agent
+					break;
+				case 4:
+					//exit
+					flag = false;
+					break;
+				default:
+					cout << "invalid choice" << endl;
+
+					break;
+				}
+
+			} while (flag);
 			break;
 		case no_login:
 			break;
@@ -159,22 +253,22 @@ bool sign_menu() {
 }
 
 // sign-in function
-login_type sign_in(User* active_user) 
+login_type sign_in(User* active_user)
 {
 	string user, password;
-	cout << "\n\n\n\t\t\t\t\tEnter user name\n\n\t\t\t\t\t" ;
+	cout << "\n\n\n\t\t\t\t\tEnter user name\n\n\t\t\t\t\t";
 	cin >> user;
-	cout << "\n\n\t\t\t\t\tEnter password\n\n\t\t\t\t\t" ;
+	cout << "\n\n\t\t\t\t\tEnter password\n\n\t\t\t\t\t";
 	cin >> password;
 	cout << "\n\n\t\t\t\t\t";
 	if (user == ADMIN_USER && password == ADMIN_PASS)
 	{
 		active_user->admin = true;
-		active_user->firstName = "";
+		active_user->firstName = "Admin";
 		active_user->lastName = "";
 		return admin_login;
 	}
-	if (!userCorrecrPass(user, password,active_user))
+	if (!userCorrecrPass(user, password, active_user))
 		return no_login;
 	return check_usertype(user);
 	// cheak info
@@ -197,7 +291,7 @@ login_type check_usertype(string user)
 		while (!DB_accounts.eof())
 		{
 			if (UserName == user)
-				return (is_agent=="Customer:"?customer_login:agent_login);
+				return (is_agent == "Customer:" ? customer_login : agent_login);
 			DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
 		}
 	DB_accounts.close();
@@ -218,16 +312,16 @@ bool ExistingUser(string username)
 		return true;
 	}
 
-	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber,seperator;
+	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
 
-	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
+	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
 	while (!DB_accounts.eof())
-	while (!DB_accounts.eof())
-	{
-		if (UserName == username)
-			return true;
-		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
-	}
+		while (!DB_accounts.eof())
+		{
+			if (UserName == username)
+				return true;
+			DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+		}
 	DB_accounts.close();
 	return false;
 }
@@ -238,13 +332,13 @@ void writeUserToFile(User use)//entering data from struct to txt file
 	fstream DB_accounts;
 	DB_accounts.open("DB_accounts.txt", ios::app);
 
-	DB_accounts << (use.agent ? "Agent: ":"Customer: ") << use.firstName << " " << use.lastName << " " << use.userName << " " << use.password << " " << use.passport << " " << (use.gen ? "M" : "F") << " " << use.age << " " << use.email << " " << use.phoneNumber << endl;
+	DB_accounts << (use.agent ? "Agent: " : "Customer: ") << use.firstName << " " << use.lastName << " " << use.userName << " " << use.password << " " << use.passport << " " << (use.gen ? "M" : "F") << " " << use.age << " " << use.email << " " << use.phoneNumber << endl;
 	DB_accounts << "~~==============================================================================~~" << endl;
 
 	DB_accounts.close();
 }
 
-bool userCorrecrPass(string username, string password,User* active_user)
+bool userCorrecrPass(string username, string password, User* active_user)
 {
 	ifstream DB_accounts;
 	DB_accounts.open("DB_accounts.txt");
@@ -254,9 +348,9 @@ bool userCorrecrPass(string username, string password,User* active_user)
 		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
 	}
 
-	string is_agent, FirstName, LastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber,seperator;
+	string is_agent, FirstName, LastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
 
-	DB_accounts >> is_agent >> FirstName >> LastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
+	DB_accounts >> is_agent >> FirstName >> LastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
 	while (!DB_accounts.eof())
 	{
 		if (UserName == username)
@@ -270,7 +364,7 @@ bool userCorrecrPass(string username, string password,User* active_user)
 				active_user->userName = UserName;
 				active_user->password = PW;
 				active_user->passport = PP;
-				active_user->gen= (Gender == "M" ? M : F);
+				active_user->gen = (Gender == "M" ? M : F);
 				active_user->age = stoi(Age);
 				active_user->email = Email;
 				active_user->phoneNumber = PhoneNumber;
@@ -282,8 +376,8 @@ bool userCorrecrPass(string username, string password,User* active_user)
 				cerr << "\n\n\n\n\t\t\t\tThis password is incorrect.\a\n\n\t\t\t";
 				return false;
 			}
-		
-		DB_accounts >> is_agent >> FirstName >> LastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber>> seperator;
+
+		DB_accounts >> is_agent >> FirstName >> LastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
 	}
 	cerr << "\n\n\n \t\t\tThis account dosen't exist.\a\n\n\t\t\t";
 	DB_accounts.close();
@@ -371,13 +465,10 @@ int Admin_Menu(User active_user)
 	system("CLS");
 	printf("\n\n\n\t\t\t\t\tHello Admin\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
-	printf("\t\t\t\t\t1-   Lead list.\n\n");
-	printf("\t\t\t\t\t2-   Add/delete packages from the database.\n\n");
-	printf("\t\t\t\t\t3-   Respond to customer messages.\n\n");
-	printf("\t\t\t\t\t4-   Confirmation of customers orders.\n\n");
-	printf("\t\t\t\t\t5-   Show User DB.\n\n");
-	printf("\t\t\t\t\t6-   Make a user an agent.\n\n");
-	printf("\t\t\t\t\t7-   Exit\n\n\t\t\t\t");
+	printf("\t\t\t\t\t1-   For agent menu.\n\n");
+	//Agent_Menu(active_user); if choice is 1
+	printf("\t\t\t\t\t2-   Make a user an agent.\n\n");
+	printf("\t\t\t\t\t3-   Exit\n\n\t\t\t\t");
 	cin >> choice;
 	cout << "\n\n\t\t\t\t";
 	return choice;
@@ -391,7 +482,7 @@ int Agent_Menu(User active_user)
 	printf("\n\n\n\t\t\t\t\tHello Agent\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   Lead list.\n\n");
-	printf("\t\t\t\t\t2-   Add/delete packages from the database.\n\n");
+	printf("\t\t\t\t\t2-   Add/Delete packages from the database.\n\n");
 	printf("\t\t\t\t\t3-   Respond to customer messages.\n\n");
 	printf("\t\t\t\t\t4-   Confirmation of customers orders.\n\n");
 	printf("\t\t\t\t\t5-   Exit\n\n\t\t\t\t");
@@ -408,7 +499,7 @@ int Customer_Menu(User active_user)
 	print_active_user_message(active_user);
 	printf("\n\n\n\t\t\t\t\tHello Customer\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
-	printf("\t\t\t\t\t1-   Search for a vication package.\n\n");
+	printf("\t\t\t\t\t1-   Search for a vacations package.\n\n");
 	printf("\t\t\t\t\t2-   Show status of package orders.\n\n");
 	printf("\t\t\t\t\t3-   Get in contact with an agent.\n\n");
 	printf("\t\t\t\t\t4-   Exit\n\n\t\t\t\t");
@@ -430,15 +521,60 @@ void PrintUsersMassages() {
 			cout << "massage number #" << i + 1 << ":" << endl;
 			while (word != "//end_of_message")
 			{
-				cout <<word<<" ";
+				cout << word << " ";
 				DB_massages >> word;
 			}
 			cout << "\n~~==============================================================================~~\n";
 			++i;
+			DB_massages >> word;
+
 		}
 	}
-	else
+	else {
+
 		cout << "no massage" << endl;
+		system("pause");
+		return;
+	}
+	//need to close DB and to open it again to be abe to read the file again in order to delete a line from it 
+	DB_massages.close();
+	DB_massages.open("DB_massages.txt");
+	DB_massages >> word;
+
+	int choice;
+	cout << "Which message you took care of? (WARNING: the number you pick will be removed from databse)" << endl;
+	cin >> choice;
+	i = 1;
+	ofstream temp;
+	temp.open("temp.txt", ios::app);
+	while (!DB_massages.eof()) {
+		while (word != "//end_of_message")
+		{
+			if (i!=choice)
+			{
+				temp << word << " ";
+
+			}
+			//cout << word << " ";
+			DB_massages >> word;
+		}
+		if (word=="//end_of_message"&& i != choice)
+		{
+			temp << "//end_of_message\n";
+		}
+		++i;
+		DB_massages >> word;
+		if (DB_massages.eof())
+		{
+			break;
+		}
+	}
+	temp.close();
+	DB_massages.close();
+	cout << "Updated databse!" << endl;
+	remove("DB_massages.txt");
+	rename("temp.txt", "DB_massages.txt");
+
 }
 
 void ContactWithAgent(User use) {
@@ -451,26 +587,26 @@ void ContactWithAgent(User use) {
 	}
 	cout << "\n\n\n\t\t\tLeave a massage for a travel agent:\n\n\n\t\t\t";
 	cin >> mass; // check
-	DB_massages <<"not_taken_care_of"<< use.email << " " << use.phoneNumber << " " << mass << endl;
+	DB_massages << "not_taken_care_of" << use.email << " " << use.phoneNumber << " " << mass << endl;
 	DB_massages << "~~==============================================================================~~" << endl;
 	DB_massages.close();
 }
 
-void print_active_user_message(User active_user) 
+void print_active_user_message(User active_user)
 {
 	time_t t = time(NULL);
 	struct tm tm = *localtime(&t);
 	//cout << "its " << tm.tm_hour << " aclock"<<" ";
 	string day_greeting;
-	if(tm.tm_hour >= 0 && tm.tm_hour < 12) 
+	if (tm.tm_hour >= 0 && tm.tm_hour < 12)
 	{
 		day_greeting = "Good Morning";
 	}
-	else if (tm.tm_hour >= 12 && tm.tm_hour < 16) 
+	else if (tm.tm_hour >= 12 && tm.tm_hour < 16)
 	{
 		day_greeting = "Good Afternoon";
 	}
-	else if (tm.tm_hour >= 16 && tm.tm_hour < 21) 
+	else if (tm.tm_hour >= 16 && tm.tm_hour < 21)
 	{
 		day_greeting = "Good Evening";
 	}
@@ -478,6 +614,151 @@ void print_active_user_message(User active_user)
 	{
 		day_greeting = "Good Night";
 	}
-	
-	cout <<"\n\t"<< day_greeting << " " << active_user.firstName << " " << active_user.lastName<<endl<<endl;
+
+	cout << "\n\t" << day_greeting << " " << active_user.firstName << " " << active_user.lastName << endl << endl;
 }
+
+void PrintUsersToAdmin() {
+	system("CLS");
+	/* ifstream file("DB_accounts.txt");
+		cout << file.rdbuf();; print all the DB the way it is*/
+	ifstream DB_accounts;
+	DB_accounts.open("DB_accounts.txt", ios::out);//open the file for output
+	if (DB_accounts.fail())
+	{
+		cout << "ERROR: no file found\a"<<endl;
+		return;
+	}
+	int i = 0;
+	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
+	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+
+	while (!DB_accounts.eof()) {
+		cout << "User number #" << i + 1 << ":" << endl;
+		//printing values from DB_accounts
+		cout << "account type:" << (is_agent == "Agent:" ? "Agent" : "Customer") << "\n\tFirst Name: " << FirstName << "\tLast Name:" << lastName << "\tUserName:" << UserName << "\n\tPassword:" << PW << "\tPastport:" << PP << "\tGender:" << Gender << "\n\tAge:" << Age << "\tEmail:" << Email << "\tPhone number:" << PhoneNumber << "\n" << seperator << endl;
+		//getting data for cout
+		++i;
+		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+	}
+	DB_accounts.close();
+
+}
+
+void Add_Agent() {
+	PrintUsersToAdmin();
+	int choice, i = 0;
+	cout << "Which user do you wish to make as Agent? (0 to cancel)" << endl;
+	cin >> choice;
+	if (choice == 0)
+		return;
+	choice -= 1;
+	string agent = "Agent: ";
+	string customer = "Customer: ";
+	ifstream DB_accounts;
+	ofstream temp;
+
+	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
+
+	DB_accounts.open("DB_accounts.txt", ios::out);
+	temp.open("temp.txt", ios::app);
+	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+
+	while (!DB_accounts.eof()) {
+		if (i == choice)
+		{
+			is_agent = agent;
+			temp << is_agent << FirstName << " " << lastName << " " << UserName << " " << PW << " " << PP << " " << Gender << " " << Age << " " << Email << " " << PhoneNumber << "\n" << seperator << endl;
+
+		}
+		else
+		{
+			temp << is_agent << " " << FirstName << " " << lastName << " " << UserName << " " << PW << " " << PP << " " << Gender << " " << Age << " " << Email << " " << PhoneNumber << "\n" << seperator << endl;
+
+		}
+		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+		++i;
+	}
+	temp.close();
+	DB_accounts.close();
+	cout << "Updated databse" << endl;
+	remove("DB_accounts.txt");
+	rename("temp.txt", "DB_accounts.txt");
+}
+
+void Add_Or_Delete_Packages() {
+	system("CLS");
+	int choice = 0;
+	do
+	{
+		printf("\t\t\t\t\t1-   To add packages.\n\n");
+		printf("\t\t\t\t\t2-   To delete packages.\n\n");
+		printf("\t\t\t\t\t3-   To Exit.\n\n");
+
+		cin >> choice;
+		if (!(choice == 2 || choice == 1 || choice == 3))
+		{
+			printf("\t\t\t\t\t   Invalid input, Please try again.\n\n");
+
+		}
+	} while (!(choice==2 || choice ==1 || choice == 3));
+	if (choice==1)
+	{
+		Add_Packages();
+	}
+	if (choice ==2)
+	{
+		Delete_Packages();
+	}
+	if (choice==3)
+	{
+		return;
+	}
+}
+void Add_Packages() {
+
+}
+
+void Delete_Packages() {
+	system("CLS");
+	int choice;
+	print_packages();
+
+	ifstream DB_packages;
+	DB_packages.open("DB_packages.txt");
+	if (DB_packages.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+
+	string destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
+	DB_packages >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	if (DB_packages.eof())
+	{
+		cerr << "\n\n\t\t\t\t No packages found in database" << endl;
+		system("pause");
+		return;
+	}
+	cout << "Which package do you wish to remove (0 to cancel)" << endl;
+	cin >> choice;
+	if (choice == 0)
+		return;
+	ofstream temp;
+	temp.open("temp.txt");
+	for (int i = 1; (!DB_packages.eof()); i++)
+	{
+		if (i!=choice)
+		{
+			temp << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << vacant_spots << " " << price << "\n" << seperator << endl;
+		}
+		DB_packages >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	}
+	temp.close();
+	DB_packages.close();
+	cout << "Removed package!" << endl;
+	remove("DB_packages.txt");
+	rename("temp.txt","DB_packages.txt");
+	print_packages();
+}
+void print_packages()
+{}
