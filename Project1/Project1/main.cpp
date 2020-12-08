@@ -4,13 +4,16 @@
 #include <fstream> // files
 #include <cstring> // string
 #include <string>
+
 using namespace std;
 
-#define ADMIN hmmsly
-#define PASS 5478
+#define ADMIN_USER "admin"
+#define ADMIN_PASS "0000"
 
 // define gender
 enum  gender { F, M };
+
+enum  login_type { admin_login , agent_login, customer_login, no_login};
 
 //user struct
 typedef struct {
@@ -27,13 +30,19 @@ typedef struct {
 }User;
 
 bool sign_menu();
-void sign_in();
+login_type sign_in();
 void sign_up();
 bool strongPassword(string);
 void writeUserToFile(User);
 bool ExistingUser(string);
 bool userCorrecrPass(string, string);
 bool passportCheck(string);
+login_type check_usertype(string);
+int Admin_Menu();
+int Agent_Menu();
+int Customer_Menu();
+void PrintUsersMassages();
+void ContactWithAgent(User);
 
 int main() {
 	while (sign_menu()) { system("CLS"); } //Opening sign in menu until it returns false (clears screan in between)
@@ -54,25 +63,61 @@ bool sign_menu() {
 	printf("\t\t\t\t\t Hello what would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   Sign In\n\n");
 	printf("\t\t\t\t\t2-   Sign Up\n\n");
-	printf("\t\t\t\t\t3-   Exit\n\n");
+	printf("\t\t\t\t\t3-   Exit\n\n\t\t\t");
 	// start system
 	int choose;
+	User active_user;
 	cin>>choose;
 	switch (choose)
 	{
-	case 1:
+	case 1://Sign in
+		
 		system("CLS");
-		sign_in();
+
+		switch (sign_in()) //Opening the Sign_in menu and gives what kind of user is being used. 
+		{
+		case admin_login:
+			Admin_Menu();
+			system("pause");
+			break;
+		case agent_login:
+			switch (Agent_Menu())
+			{
+			case 1:
+				break;
+			case 2:
+				break;
+			case 3:
+				PrintUsersMassages();
+				system("pause");
+				break;
+			case 4:
+				break;
+			}
+			system("pause");
+			break;
+		case customer_login:
+			Customer_Menu();
+			system("pause");
+			break;
+		case no_login:
+			system("pause");
+			break;
+		}
+
+		system("pause");
 		return true;
 		break;
-	case 2:
+
+	case 2://Sign up
 		system("CLS");
 		sign_up();
 		return true;
 		break;
-	case 3:
+
+	case 3://quit
 		system("CLS");
-		printf("\n\n\n\n\n\n\t\t\t\t\goodbye!! hope to see you soon:)\n");
+		printf("\n\n\n\n\n\n\t\t\t\tGoodbye!! hope to see you soon:)\n");
 		return false;
 		break;
 	default:
@@ -82,61 +127,44 @@ bool sign_menu() {
 }
 
 // sign-in function
-void sign_in() {
+login_type sign_in() 
+{
 	string user, password;
-	do {
-		cout << "\n\n\n\t\t\tEnter user name\n" << endl;
-		cin >> user;
-		cout << "\n\n\t\t\tEnter password\n" << endl;
-		cin >> password;
-	} while (!userCorrecrPass(user, password));
+	cout << "\n\n\n\t\t\t\t\tEnter user name\n\n\t\t\t\t\t" ;
+	cin >> user;
+	cout << "\n\n\t\t\t\t\tEnter password\n\n\t\t\t\t\t" ;
+	cin >> password;
+	cout << "\n\n\t\t\t\t\t";
+	if (user == ADMIN_USER && password == ADMIN_PASS)
+		return admin_login;
+	if (!userCorrecrPass(user, password))
+		return no_login;
+	return check_usertype(user);
 	// cheak info
 }
 
-//// old sign-up function
-//void sign_up() {
-//	bool check; // keep the return value from check password
-//	User use;
-//	do {
-//		cout << "\n\n\n\t\t\tEnter user name\n\t\t\t    ";
-//		cin >>use.userName;
-//		if (ExistingUser(use.userName))
-//			cout << "\n\n\n\tThis user already exist.\a";
-//	} while (ExistingUser(use.userName));
-//	do {
-//		cout << "\n\n\t\t\tEnter password\n\t\t\t    ";
-//		cin >> use.password;
-//		if (!strongPassword(use.password))
-//			cout << "\n\n\nThis password is not strong enough (Need to include an upper,lower and numiric character and 8 or more charecters).\a\n";
-//	} while (!strongPassword(use.password));
-//	cout << "\n\n\t\tEnter your first name\n\t\t\t    ";
-//	cin >> use.firstName;
-//	cout << "\n\n\t\t\tEnter your last name\n\t\t\t    ";
-//	cin >> use.lastName;
-//	cout << "\n\n\t\t\tEnter your passport\n\t\t\t    ";
-//	cin >> use.passport;
-//	cout << "\n\n\t\t\tEnter your age\n\t\t\t    ";
-//	cin >> use.age;
-//	int g;
-//	do {
-//		cout << "\n\n\t\t\tEnter gender: 1-male, 2-female\n\t\t\t    ";
-//		cin >> g;
-//		if (g == 1)
-//			use.gen = M;
-//		else if (g == 2)
-//			use.gen = F;
-//		else
-//			cout << "\n\n\t\t\tbad input\t\t\t";
-//	} while (g!=1 && g!=2);
-//	cout << "\n\n\t\t\tEnter your email\n\t\t\t    ";
-//	cin >> use.email;
-//	cout << "\n\n\t\t\tEnter your phone number\n\t\t\t    ";
-//	cin >> use.phoneNumber;
-//	use.agent = false;
-//	writeUserToFile(use);
-//
-//}
+login_type check_usertype(string user)
+{
+	ifstream DB_accounts;
+	DB_accounts.open("DB_accounts.txt");
 
+	if (DB_accounts.fail())
+	{
+		cerr << "\n\n\n \t\t\tERROR: The file couldn't be opened.\a" << endl;
+	}
+
+	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
+
+	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+	while (!DB_accounts.eof())
+		while (!DB_accounts.eof())
+		{
+			if (UserName == user)
+				return (is_agent=="Customer:"?customer_login:agent_login);
+			DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+		}
+	DB_accounts.close();
+}
 
 bool ExistingUser(string username)
 {
@@ -146,6 +174,11 @@ bool ExistingUser(string username)
 	if (DB_accounts.fail())
 	{
 		cerr << "\n\n\n \t\t\tERROR: The file couldn't be opened.\a" << endl;
+	}
+
+	if (username == ADMIN_USER)
+	{
+		return true;
 	}
 
 	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber,seperator;
@@ -161,19 +194,6 @@ bool ExistingUser(string username)
 	DB_accounts.close();
 	return false;
 }
-
-//void writeUserToFile(User use) old
-//{
-//	fstream DB_accounts;
-//	DB_accounts.open("DB_accounts.txt", ios::app);
-//	if (use.agent)
-//	{
-//		DB_accounts << use.userName << " " << use.password << " " << "Agent" << endl;
-//	}
-//	else
-//		DB_accounts << use.userName << " " << use.password << " " << "Customer" << endl;
-//	DB_accounts.close();
-//}
 
 void writeUserToFile(User use)//entering data from struct to txt file
 {
@@ -240,45 +260,45 @@ void sign_up() {//new sign up
 	User use;
 	do {
 		//must enter a new username to continue
-		cout << "\n\n\n\t\t\tEnter user name\n\t\t\t    ";
+		cout << "\n\n\n\t\t\tEnter user name\n\n\t\t\t";
 		cin >> use.userName;
 		if (ExistingUser(use.userName))
-			cout << "\n\n\n\tThis user already exist.\a";
+			cout << "\n\n\n\t\t     This user already exist.\a";
 	} while (ExistingUser(use.userName));
 	do {
 		//must enter a valid password
-		cout << "\n\n\t\t\tEnter password\n\t\t\t    ";
+		cout << "\n\n\n\t\t\tEnter password\n\n\t\t\t";
 		cin >> use.password;
 		if (!strongPassword(use.password))
-			cout << "\n\n\nThis password is not strong enough (Need to include an upper,lower and numiric character and 8 or more charecters).\a\n";
+			cout << "\n\n\n\t\t\tThis password is not strong enough \n    (Need to include an upper,lower and numiric character and 8 or more charecters).\a\n\t\t\t";
 	} while (!strongPassword(use.password));
-	cout << "\n\n\t\tEnter your first name\n\t\t\t    ";
+	cout << "\n\n\n\t\t\tEnter your first name\n\n\t\t\t";
 	cin >> use.firstName;
-	cout << "\n\n\t\t\tEnter your last name\n\t\t\t    ";
+	cout << "\n\n\t\t\tEnter your last name\n\n\t\t\t";
 	cin >> use.lastName;
 	do {
 		//must enter 9 characters for valid passport
-		cout << "\n\n\t\t\tEnter your passport\n\t\t\t    ";
+		cout << "\n\n\n\t\t\tEnter your passport\n\n\t\t\t";
 		cin >> use.passport;
 		if (passportCheck(use.passport))
-			cout << "\n\n\n\tThis passport in not valid, Please enter passport with minimum 9 charecters.\a";
+			cout << "\n\n\n\t   This passport in not valid, Please enter passport with maximum 8 charecters.\a";
 	} while (passportCheck(use.passport));//passport check
-	cout << "\n\n\t\t\tEnter your age\n\t\t\t    ";
+	cout << "\n\n\t\t\tEnter your age\n\n\t\t\t";
 	cin >> use.age;
 	int g;
 	do {
-		cout << "\n\n\t\t\tEnter gender: 1-male, 2-female\n\t\t\t    ";
+		cout << "\n\n\n\t\t\tEnter gender: 1-male, 2-female\n\n\t\t\t";
 		cin >> g;
 		if (g == 1)
 			use.gen = M;
 		else if (g == 2)
 			use.gen = F;
 		else
-			cout << "\n\n\t\t\tbad input\t\t\t";
+			cout << "\n\n\n\t\t\tbad input\n\n\t\t\t";
 	} while (g != 1 && g != 2);
-	cout << "\n\n\t\t\tEnter your email\n\t\t\t    ";
+	cout << "\n\n\n\t\t\tEnter your email\n\n\t\t\t";
 	cin >> use.email;
-	cout << "\n\n\t\t\tEnter your phone number\n\t\t\t    ";
+	cout << "\n\n\n\t\t\tEnter your phone number\n\n\t\t\t";
 	cin >> use.phoneNumber;
 	use.agent = false;
 	writeUserToFile(use);
@@ -291,4 +311,90 @@ bool passportCheck(string passport) {
 		return true;
 	}
 	return false;
+}
+
+int Admin_Menu()
+{
+	int choice;
+	system("CLS");
+	printf("\n\n\n\t\t\t\t\tHello Admin\n\n\n\t\t\t");
+	printf("\t\t What would you like to do?\n\n");
+	printf("\t\t\t\t\t1-   Lead list.\n\n");
+	printf("\t\t\t\t\t2-   Add/delete packages from the database.\n\n");
+	printf("\t\t\t\t\t3-   Respond to customer messages.\n\n");
+	printf("\t\t\t\t\t4-   Confirmation of customers orders.\n\n");
+	printf("\t\t\t\t\t5-   Show User DB.\n\n");
+	printf("\t\t\t\t\t6-   Make a user an agent.\n\n");
+	printf("\t\t\t\t\t7-   Exit\n\n\t\t\t");
+	cin >> choice;
+	return choice;
+}
+
+int Agent_Menu()
+{
+	int choice;
+	system("CLS");
+	printf("\n\n\n\t\t\t\t\tHello Agent\n\n\n\t\t\t");
+	printf("\t\t What would you like to do?\n\n");
+	printf("\t\t\t\t\t1-   Lead list.\n\n");
+	printf("\t\t\t\t\t2-   Add/delete packages from the database.\n\n");
+	printf("\t\t\t\t\t3-   Respond to customer messages.\n\n");
+	printf("\t\t\t\t\t4-   Confirmation of customers orders.\n\n");
+	printf("\t\t\t\t\t5-   Exit\n\n\t\t\t");
+	cin >> choice;
+	return choice;
+}
+
+
+int Customer_Menu()
+{
+	int choice;
+	system("CLS");
+	printf("\n\n\n\t\t\t\t\tHello Customer\n\n\n\t\t\t");
+	printf("\t\t What would you like to do?\n\n");
+	printf("\t\t\t\t\t1-   Search for a vication package.\n\n");
+	printf("\t\t\t\t\t2-   Show status of package orders.\n\n");
+	printf("\t\t\t\t\t3-   Get in contact with an agent.\n\n");
+	printf("\t\t\t\t\t4-   Exit\n\n\t\t\t");
+	cin >> choice;
+	return choice;
+}
+
+
+void PrintUsersMassages() {
+	ifstream DB_massages;
+	DB_massages.open("DB_massages.txt");
+
+	int i = 0;
+	string word;
+	DB_massages >> word;
+	if (!DB_massages.eof()) {
+		while (!DB_massages.eof()) {
+			cout << "massage number #" << i + 1 << ":" << endl;
+			while (word != "//end_of_message")
+			{
+				cout <<word<<" ";
+				DB_massages >> word;
+			}
+			cout << "\n~~==============================================================================~~\n";
+			++i;
+		}
+	}
+	else
+		cout << "no massage" << endl;
+}
+
+void ContactWithAgent(User use) {
+	string mass;
+	fstream DB_massages;
+	DB_massages.open("DB_massages.txt", ios::app);
+	if (DB_massages.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+	cout << "write your massage to agent\n";
+	cin >> mass; // check
+	DB_massages <<"not_taken_care_of"<< use.email << " " << use.phoneNumber << " " << mass << endl;
+	DB_massages << "~~==============================================================================~~" << endl;
+	DB_massages.close();
 }

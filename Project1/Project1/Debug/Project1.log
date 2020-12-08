@@ -1,5 +1,1 @@
-﻿  main.cpp
-c:\users\hadar\desktop\github\project\project1\project1\main.cpp(88): warning C4101: 'check': unreferenced local variable
-c:\users\hadar\desktop\github\project\project1\project1\main.cpp(87): warning C4101: 'choose': unreferenced local variable
-c:\users\hadar\desktop\github\project\project1\project1\main.cpp(111): warning C4018: '<': signed/unsigned mismatch
-  Project1.vcxproj -> C:\Users\Hadar\Desktop\github\Project\Project1\Debug\Project1.exe
+﻿  Project1.vcxproj -> C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Project1\Debug\Project1.exe
