@@ -133,14 +133,14 @@ bool sign_menu() {
 						break;
 					case 2:
 						//add and delete packages from DB
-						Add_Or_Delete_Packages();
+						Add_Or_Delete_Packages();//working
 						break;
-					case 3:
+					case 3://need to fix
 						//reply to customers
 						PrintUsersMassages();
 						system("pause");
 						break;
-					case 4:
+					case 4://need to fix
 						//confirm orders for customers
 						break;
 					case 5:
@@ -526,10 +526,55 @@ void PrintUsersMassages() {
 			}
 			cout << "\n~~==============================================================================~~\n";
 			++i;
+			DB_massages >> word;
+
 		}
 	}
-	else
+	else {
+
 		cout << "no massage" << endl;
+		system("pause");
+		return;
+	}
+	//need to close DB and to open it again to be abe to read the file again in order to delete a line from it 
+	DB_massages.close();
+	DB_massages.open("DB_massages.txt");
+	DB_massages >> word;
+
+	int choice;
+	cout << "Which message you took care of? (WARNING: the number you pick will be removed from databse)" << endl;
+	cin >> choice;
+	i = 1;
+	ofstream temp;
+	temp.open("temp.txt", ios::app);
+	while (!DB_massages.eof()) {
+		while (word != "//end_of_message")
+		{
+			if (i!=choice)
+			{
+				temp << word << " ";
+
+			}
+			//cout << word << " ";
+			DB_massages >> word;
+		}
+		if (word=="//end_of_message"&& i != choice)
+		{
+			temp << "//end_of_message\n";
+		}
+		++i;
+		DB_massages >> word;
+		if (DB_massages.eof())
+		{
+			break;
+		}
+	}
+	temp.close();
+	DB_massages.close();
+	cout << "Updated databse!" << endl;
+	remove("DB_massages.txt");
+	rename("temp.txt", "DB_massages.txt");
+
 }
 
 void ContactWithAgent(User use) {
