@@ -37,6 +37,7 @@ typedef struct {
 bool sign_menu();
 login_type sign_in(User*);
 void sign_up();
+void vacation_search();
 bool strongPassword(string);
 void writeUserToFile(User);
 bool ExistingUser(string);
@@ -51,6 +52,11 @@ void ContactWithAgent(User);
 void print_active_user_message(User);
 void PrintUsersToAdmin();
 void Add_Agent();
+void Add_Or_Delete_Packages();
+void Add_Packages();
+void print_packages();
+void Delete_Packages();
+
 
 int main() {
 	cout << "\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t\t\t\t\t";
@@ -120,7 +126,30 @@ bool sign_menu() {
 
 				switch (Admin_Menu(active_user)) {
 				case 1:
-					Agent_Menu(active_user);
+					switch (Agent_Menu(active_user))
+					{
+					case 1:
+						//lead list- all the customers in DB 
+						break;
+					case 2:
+						//add and delete packages from DB
+						Add_Or_Delete_Packages();
+						break;
+					case 3:
+						//reply to customers
+						PrintUsersMassages();
+						system("pause");
+						break;
+					case 4:
+						//confirm orders for customers
+						break;
+					case 5:
+						flag = false;
+						break;
+					default:
+						cout << "invalid choice" << endl;
+						break;
+					}
 					break;
 				case 2:
 					Add_Agent();
@@ -147,6 +176,7 @@ bool sign_menu() {
 					break;
 				case 2:
 					//add and delete packages from DB
+					Add_Or_Delete_Packages();
 					break;
 				case 3:
 					//reply to customers
@@ -176,6 +206,7 @@ bool sign_menu() {
 				{
 				case 1:
 					//vacations search
+					//vacation_search();
 					break;
 				case 2:
 					//show status for packages orders
@@ -233,7 +264,7 @@ login_type sign_in(User* active_user)
 	if (user == ADMIN_USER && password == ADMIN_PASS)
 	{
 		active_user->admin = true;
-		active_user->firstName = "";
+		active_user->firstName = "Admin";
 		active_user->lastName = "";
 		return admin_login;
 	}
@@ -451,7 +482,7 @@ int Agent_Menu(User active_user)
 	printf("\n\n\n\t\t\t\t\tHello Agent\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   Lead list.\n\n");
-	printf("\t\t\t\t\t2-   Add/delete packages from the database.\n\n");
+	printf("\t\t\t\t\t2-   Add/Delete packages from the database.\n\n");
 	printf("\t\t\t\t\t3-   Respond to customer messages.\n\n");
 	printf("\t\t\t\t\t4-   Confirmation of customers orders.\n\n");
 	printf("\t\t\t\t\t5-   Exit\n\n\t\t\t\t");
@@ -548,6 +579,11 @@ void PrintUsersToAdmin() {
 		cout << file.rdbuf();; print all the DB the way it is*/
 	ifstream DB_accounts;
 	DB_accounts.open("DB_accounts.txt", ios::out);//open the file for output
+	if (DB_accounts.fail())
+	{
+		cout << "ERROR: no file found\a"<<endl;
+		return;
+	}
 	int i = 0;
 	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
 	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
@@ -603,4 +639,110 @@ void Add_Agent() {
 	cout << "Updated databse" << endl;
 	remove("DB_accounts.txt");
 	rename("temp.txt", "DB_accounts.txt");
+}
+
+void Add_Or_Delete_Packages() {
+	system("CLS");
+	int choice = 0;
+	do
+	{
+		printf("\t\t\t\t\t1-   To add packages.\n\n");
+		printf("\t\t\t\t\t2-   To delete packages.\n\n");
+		printf("\t\t\t\t\t3-   To Exit.\n\n");
+
+		cin >> choice;
+		if (!(choice == 2 || choice == 1 || choice == 3))
+		{
+			printf("\t\t\t\t\t   Invalid input, Please try again.\n\n");
+
+		}
+	} while (!(choice==2 || choice ==1 || choice == 3));
+	if (choice==1)
+	{
+		Add_Packages();
+	}
+	if (choice ==2)
+	{
+		Delete_Packages();
+	}
+	if (choice==3)
+	{
+		return;
+	}
+}
+void Add_Packages() {
+
+}
+
+void Delete_Packages() {
+	system("CLS");
+	int choice;
+	print_packages();
+
+	ifstream DB_packages;
+	DB_packages.open("DB_packages.txt");
+	if (DB_packages.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+
+	string destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
+	DB_packages >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	if (DB_packages.eof())
+	{
+		cerr << "\n\n\t\t\t\t No packages found in database" << endl;
+		system("pause");
+		return;
+	}
+	cout << "Which package do you wish to remove (0 to cancel)" << endl;
+	cin >> choice;
+	if (choice == 0)
+		return;
+	ofstream temp;
+	temp.open("temp.txt");
+	for (int i = 1; (!DB_packages.eof()); i++)
+	{
+		if (i!=choice)
+		{
+			temp << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << vacant_spots << " " << price << "\n" << seperator << endl;
+		}
+		DB_packages >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	}
+	temp.close();
+	DB_packages.close();
+	cout << "Removed package!" << endl;
+	remove("DB_packages.txt");
+	rename("temp.txt","DB_packages.txt");
+	print_packages();
+}
+void print_packages()
+{
+	system("CLS");
+	ifstream DB_packages;
+	DB_packages.open("DB_packages.txt");
+
+	if (DB_packages.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+	string destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
+
+	DB_packages >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	if (DB_packages.eof())
+	{
+		return;
+	}
+	int i = 1;
+	do
+	{
+		cout << "Package number:" << i << endl;
+		cout << "\n\n\tDestenation: " << destenation << "  Origin: " << origin << "  Departure date: " << departure_date;
+		cout << "\n\n\tReturn date: " << return_date << "  Hotel: " << hotel << "  Flight company: " << flight_company << "  Flight number: " << flight_number;
+		cout << "\n\n\tVaccent spots:" << vacant_spots << "  Price (per passenger): " << price << "\n\n";
+		cout << seperator << endl << endl;
+		DB_packages >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+		i++;
+	} while (!DB_packages.eof());
+	DB_packages.close();
+	system("pause");
 }
