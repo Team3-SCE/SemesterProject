@@ -1,6 +1,17 @@
 // team 3
 #define _CRT_SECURE_NO_WARNINGS
 
+#define RESET   "\033[0m"
+#define BLACK   "\033[30m"      /* Black */
+#define RED     "\033[31m"      /* Red */
+#define GREEN   "\033[32m"      /* Green */
+#define YELLOW  "\033[33m"      /* Yellow */
+#define BLUE    "\033[34m"      /* Blue */
+#define MAGENTA "\033[35m"      /* Magenta */
+#define CYAN    "\033[36m"      /* Cyan */
+#define WHITE   "\033[37m"      /* White 
+Note: If you don't use RESET the color will remain changed until the next time you use a color code.*/
+
 #include <iostream>
 #include <fstream> // files
 #include <cstring> // string
@@ -47,7 +58,7 @@ login_type check_usertype(string);
 int Admin_Menu(User active_user);
 int Agent_Menu(User active_user);
 int Customer_Menu(User active_user);
-void PrintUsersMassages();
+void PrintDeleteUsersMassages();
 void ContactWithAgent(User);
 void print_active_user_message(User);
 void PrintUsersToAdmin();
@@ -56,11 +67,15 @@ void Add_Or_Delete_Packages();
 void Add_Packages();
 void print_packages();
 void Delete_Packages();
+bool Is_Serial_Num_Avilable(string number);
+void Add_Message(User active_user);
+void clearbuffer();
+void Main_Menu();
 
 
 int main() {
 	cout << "\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t\t\t\t\t";
-	for (int i = 0;i < 3;i++) {
+	for (int i = 0; i < 3; i++) {
 
 		std::cout << "\b\b\b\b\b\b\b\b\b\bLoading   " << std::flush;
 		Sleep(100);
@@ -97,17 +112,7 @@ bool sign_menu() {
 	// welcome
 	system("CLS");
 	print_active_user_message(active_user);
-	printf("\t\t88888888888                                888  .d8888b.  888 d8b          888     \n");
-	printf("\t\t    888                                    888 d88P  Y88b 888 Y8P          888     \n");
-	printf("\t\t    888                                    888 888    888 888              888     \n");
-	printf("\t\t    888  888d888 8888b.  888  888  .d88b.  888 888        888 888  .d8888b 888  888\n");
-	printf("\t\t    888  888    .d888888 Y88  88P 88888888 888 888    888 888 888 888      888888K \n");
-	printf("\t\t    888  888    888  888  Y8bd8P  Y8b.     888 Y88b  d88P 888 888 Y88b.    888 \"88b\n");
-	printf("\t\t    888  888    \"Y888888   Y88P    \"Y8888  888  \"Y8888P\"  888 888  \"Y8888P 888  888\n\n\n\n");
-	printf("\t\t\t\t\t Hello what would you like to do?\n\n");
-	printf("\t\t\t\t\t1-   Sign In\n\n");
-	printf("\t\t\t\t\t2-   Sign Up\n\n");
-	printf("\t\t\t\t\t3-   Exit\n\n\t\t\t");
+	Main_Menu();
 	// start system
 	cin >> choose;
 	bool flag = true;
@@ -133,14 +138,14 @@ bool sign_menu() {
 						break;
 					case 2:
 						//add and delete packages from DB
-						Add_Or_Delete_Packages();//working
+						Add_Or_Delete_Packages();
 						break;
-					case 3://need to fix
+					case 3:
 						//reply to customers
-						PrintUsersMassages();
+						PrintDeleteUsersMassages();
 						system("pause");
 						break;
-					case 4://need to fix
+					case 4:
 						//confirm orders for customers
 						break;
 					case 5:
@@ -180,7 +185,7 @@ bool sign_menu() {
 					break;
 				case 3:
 					//reply to customers
-					PrintUsersMassages();
+					PrintDeleteUsersMassages();
 					system("pause");
 					break;
 				case 4:
@@ -213,6 +218,7 @@ bool sign_menu() {
 					break;
 				case 3:
 					//get in contact with agent
+					Add_Message(active_user);
 					break;
 				case 4:
 					//exit
@@ -390,7 +396,7 @@ bool strongPassword(string pass)
 	bool upper = false;
 	bool lower = false;
 	bool number = false;
-	if (pass.length() >= 8)
+	if (pass.length() > 8)
 		for (int i = 0; i < pass.length(); i++)
 			if (pass[i] <= 'Z' && pass[i] >= 'A') // check if there is minimum one upper letter 
 				upper = true;
@@ -402,7 +408,6 @@ bool strongPassword(string pass)
 }
 
 void sign_up() {//new sign up
-	bool check; // keep the return value from check password
 	User use;
 	do {
 		//must enter a new username to continue
@@ -463,7 +468,8 @@ int Admin_Menu(User active_user)
 {
 	int choice;
 	system("CLS");
-	printf("\n\n\n\t\t\t\t\tHello Admin\n\n\n\t\t\t");
+	print_active_user_message(active_user);
+	printf("\n\n\n\t\t\t\t\t Admin menu\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   For agent menu.\n\n");
 	//Agent_Menu(active_user); if choice is 1
@@ -479,7 +485,7 @@ int Agent_Menu(User active_user)
 	int choice;
 	system("CLS");
 	print_active_user_message(active_user);
-	printf("\n\n\n\t\t\t\t\tHello Agent\n\n\n\t\t\t");
+	printf("\n\n\n\t\t\t\t\t Agent menu\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   Lead list.\n\n");
 	printf("\t\t\t\t\t2-   Add/Delete packages from the database.\n\n");
@@ -491,13 +497,12 @@ int Agent_Menu(User active_user)
 	return choice;
 }
 
-
 int Customer_Menu(User active_user)
 {
 	int choice;
 	system("CLS");
 	print_active_user_message(active_user);
-	printf("\n\n\n\t\t\t\t\tHello Customer\n\n\n\t\t\t");
+	printf("\n\n\n\t\t\t\t\tCustomer\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   Search for a vacations package.\n\n");
 	printf("\t\t\t\t\t2-   Show status of package orders.\n\n");
@@ -508,8 +513,7 @@ int Customer_Menu(User active_user)
 	return choice;
 }
 
-
-void PrintUsersMassages() {
+void PrintDeleteUsersMassages() {
 	ifstream DB_massages;
 	DB_massages.open("DB_massages.txt");
 	int i = 0;
@@ -521,6 +525,8 @@ void PrintUsersMassages() {
 			cout << "massage number #" << i + 1 << ":" << endl;
 			while (word != "//end_of_message")
 			{
+				if (word == "Message:")
+					cout << endl;
 				cout << word << " ";
 				DB_massages >> word;
 			}
@@ -542,7 +548,7 @@ void PrintUsersMassages() {
 	DB_massages >> word;
 
 	int choice;
-	cout << "Which message you took care of? (WARNING: the number you pick will be removed from databse)" << endl;
+	cout << "Which message you took care of? (WARNING: the number you pick will be removed from databse)\n\n\n\t\t\t\t To exit enter " << i + 1 << " or above" << endl;
 	cin >> choice;
 	i = 1;
 	ofstream temp;
@@ -550,7 +556,7 @@ void PrintUsersMassages() {
 	while (!DB_massages.eof()) {
 		while (word != "//end_of_message")
 		{
-			if (i!=choice)
+			if (i != choice)
 			{
 				temp << word << " ";
 
@@ -558,7 +564,7 @@ void PrintUsersMassages() {
 			//cout << word << " ";
 			DB_massages >> word;
 		}
-		if (word=="//end_of_message"&& i != choice)
+		if (word == "//end_of_message" && i != choice)
 		{
 			temp << "//end_of_message\n";
 		}
@@ -571,7 +577,6 @@ void PrintUsersMassages() {
 	}
 	temp.close();
 	DB_massages.close();
-	cout << "Updated databse!" << endl;
 	remove("DB_massages.txt");
 	rename("temp.txt", "DB_massages.txt");
 
@@ -626,7 +631,7 @@ void PrintUsersToAdmin() {
 	DB_accounts.open("DB_accounts.txt", ios::out);//open the file for output
 	if (DB_accounts.fail())
 	{
-		cout << "ERROR: no file found\a"<<endl;
+		cout << "ERROR: no file found\a" << endl;
 		return;
 	}
 	int i = 0;
@@ -691,7 +696,7 @@ void Add_Or_Delete_Packages() {
 	int choice = 0;
 	do
 	{
-		printf("\t\t\t\t\t1-   To add packages.\n\n");
+		printf("\n\n\n\n\t\t\t\t\t1-   To add packages.\n\n");
 		printf("\t\t\t\t\t2-   To delete packages.\n\n");
 		printf("\t\t\t\t\t3-   To Exit.\n\n");
 
@@ -701,22 +706,19 @@ void Add_Or_Delete_Packages() {
 			printf("\t\t\t\t\t   Invalid input, Please try again.\n\n");
 
 		}
-	} while (!(choice==2 || choice ==1 || choice == 3));
-	if (choice==1)
+	} while (!(choice == 2 || choice == 1 || choice == 3));
+	if (choice == 1)
 	{
 		Add_Packages();
 	}
-	if (choice ==2)
+	if (choice == 2)
 	{
 		Delete_Packages();
 	}
-	if (choice==3)
+	if (choice == 3)
 	{
 		return;
 	}
-}
-void Add_Packages() {
-
 }
 
 void Delete_Packages() {
@@ -731,15 +733,15 @@ void Delete_Packages() {
 		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
 	}
 
-	string destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
-	DB_packages >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	string serial_number, destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
+	DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
 	if (DB_packages.eof())
 	{
 		cerr << "\n\n\t\t\t\t No packages found in database" << endl;
 		system("pause");
 		return;
 	}
-	cout << "Which package do you wish to remove (0 to cancel)" << endl;
+	cout << "\n\n\n\n\t\t\t\tWhich package do you wish to remove (0 to cancel)" << endl;
 	cin >> choice;
 	if (choice == 0)
 		return;
@@ -747,19 +749,20 @@ void Delete_Packages() {
 	temp.open("temp.txt");
 	for (int i = 1; (!DB_packages.eof()); i++)
 	{
-		if (i!=choice)
+		if (i != choice)
 		{
-			temp << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << vacant_spots << " " << price << "\n" << seperator << endl;
+			temp << serial_number << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << vacant_spots << " " << price << "\n" << seperator << endl;
 		}
-		DB_packages >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+		DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
 	}
 	temp.close();
 	DB_packages.close();
 	cout << "Removed package!" << endl;
 	remove("DB_packages.txt");
-	rename("temp.txt","DB_packages.txt");
+	rename("temp.txt", "DB_packages.txt");
 	print_packages();
 }
+
 void print_packages()
 {
 	system("CLS");
@@ -770,9 +773,9 @@ void print_packages()
 	{
 		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
 	}
-	string destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
+	string serial_number, destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
 
-	DB_packages >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
 	if (DB_packages.eof())
 	{
 		return;
@@ -780,14 +783,139 @@ void print_packages()
 	int i = 1;
 	do
 	{
-		cout << "Package number:" << i << endl;
+		cout << "Package number:" << i << "\tSerial Num." << serial_number << endl;
 		cout << "\n\n\tDestenation: " << destenation << "  Origin: " << origin << "  Departure date: " << departure_date;
 		cout << "\n\n\tReturn date: " << return_date << "  Hotel: " << hotel << "  Flight company: " << flight_company << "  Flight number: " << flight_number;
 		cout << "\n\n\tVaccent spots:" << vacant_spots << "  Price (per passenger): " << price << "\n\n";
 		cout << seperator << endl << endl;
-		DB_packages >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+		DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
 		i++;
 	} while (!DB_packages.eof());
 	DB_packages.close();
 	system("pause");
+}
+
+void Add_Packages()
+{
+	string serial_number, destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price;
+	system("CLS");
+	cout << "\n\n\n\t\t\tEnter destenation\n\n\t\t\t";
+	cin >> destenation;
+	cout << "\n\n\n\t\t\tEnter origin\n\n\t\t\t";
+	cin >> origin;
+	cout << "\n\n\n\t\t\tEnter departure_date\n\n\t\t\t";
+	cin >> departure_date;
+	cout << "\n\n\n\t\t\tEnter return_date\n\n\t\t\t";
+	cin >> return_date;
+	cout << "\n\n\n\t\t\tEnter hotel\n\n\t\t\t";
+	cin >> hotel;
+	cout << "\n\n\n\t\t\tEnter flight_company\n\n\t\t\t";
+	cin >> flight_company;
+	cout << "\n\n\n\t\t\tEnter flight_number\n\n\t\t\t";
+	cin >> flight_number;
+	cout << "\n\n\n\t\t\tEnter vacant_spots\n\n\t\t\t";
+	cin >> vacant_spots;
+	cout << "\n\n\n\t\t\tEnter price\n\n\t\t\t";
+	cin >> price;
+
+	do
+	{
+		cout << "\n\n\n\t\t\tEnter serial number\n\n\t\t\t";
+		cin >> serial_number;
+		if (!Is_Serial_Num_Avilable(serial_number))
+		{
+			cerr << "\n\n\n\t\t\t This serial number is not avilable.\n\n\a";
+		}
+	} while (!Is_Serial_Num_Avilable(serial_number));
+
+
+	fstream DB_packages;
+	DB_packages.open("DB_packages.txt", ios::app);
+
+	if (DB_packages.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+
+	DB_packages << endl << serial_number << " " << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << vacant_spots << " " << price << "\n";
+	DB_packages << "~~------------------------------------------------------------------------------------~~" << endl;
+
+	DB_packages.close();
+
+}
+
+bool Is_Serial_Num_Avilable(string number)
+{
+	ifstream DB_packages;
+	DB_packages.open("DB_packages.txt");
+
+	if (DB_packages.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+	string serial_number, destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
+
+	DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	if (DB_packages.eof())
+	{
+		return true;
+	}
+
+	do
+	{
+		if (serial_number == number)
+			return  false;
+		DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	} while (!DB_packages.eof());
+
+	DB_packages.close();
+	return true;
+}
+
+void Add_Message(User active_user) {
+	string message;
+	ofstream DB_messages;
+	DB_messages.open("DB_massages.txt", ios::app);
+	if (DB_messages.fail())
+	{
+		cout << "ERROR: cannot open file" << endl;
+		return;
+	}
+	system("CLS");
+	cout << "\n\n\n\n\t\t\t\tPlease enter your massage:\n\n\n\t\t\t";
+
+	clearbuffer();//need to clear buffer before reading string type from user
+	getline(cin, message);
+
+	DB_messages << "Name: " << active_user.firstName << " " << active_user.lastName << " Phone number: " << active_user.phoneNumber << " Email:" << active_user.email << "\nMessage: " << message << " " << "//end_of_message\n";
+	cout << "Sent!" << endl;
+	system("pause");
+
+	DB_messages.close();
+}
+void clearbuffer() {
+	int c;
+	while ((c = getchar()) != '\n' && c != EOF) {}
+}
+void Main_Menu() {
+	cout << RED;
+	printf("\t\t88888888888                                888  .d8888b.  888 d8b          888     \n");
+	cout << YELLOW;
+	printf("\t\t    888                                    888 d88P  Y88b 888 Y8P          888     \n");
+	cout << MAGENTA;
+	printf("\t\t    888                                    888 888    888 888              888     \n");
+	cout << BLUE;
+	printf("\t\t    888  888d888 8888b.  888  888  .d88b.  888 888        888 888  .d8888b 888  888\n");
+	cout << CYAN;
+	printf("\t\t    888  888    .d888888 Y88  88P 88888888 888 888    888 888 888 888      888888K \n");
+	cout << YELLOW;
+	printf("\t\t    888  888    888  888  Y8bd8P  Y8b.     888 Y88b  d88P 888 888 Y88b.    888 \"88b\n");
+	cout << RED;
+	printf("\t\t    888  888    \"Y888888   Y88P    \"Y8888  888  \"Y8888P\"  888 888  \"Y8888P 888  888\n\n\n\n");
+	cout << RESET;
+
+	printf("\t\t\t\t\t Hello what would you like to do?\n\n");
+	printf("\t\t\t\t\t1-   Sign In\n\n");
+	printf("\t\t\t\t\t2-   Sign Up\n\n");
+	printf("\t\t\t\t\t3-   Exit\n\n\t\t\t");
 }
