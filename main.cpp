@@ -45,22 +45,22 @@ typedef struct {
 	bool admin;
 }User;
 
-bool sign_menu();
-login_type sign_in(User*);
-void sign_up();
-void vacation_search();
-bool strongPassword(string);
-void writeUserToFile(User);
-bool ExistingUser(string);
-bool userCorrecrPass(string, string, User*);
-bool passportCheck(string);
-login_type check_usertype(string);
+bool Sign_Menu();
+login_type Sign_In(User*);
+void Sign_Up();
+void Vacation_Search();
+bool Strong_Password(string);
+void Write_User_To_File(User);
+bool Existing_User(string);
+bool User_Correcr_Pass(string, string, User*);
+bool Passport_Check(string);
+login_type Check_User_type(string);
 int Admin_Menu(User active_user);
 int Agent_Menu(User active_user);
 int Customer_Menu(User active_user);
 void PrintDeleteUsersMassages();
 void ContactWithAgent(User);
-void print_active_user_message(User);
+void Print_Active_User_Message(User);
 void PrintUsersToAdmin();
 void Add_Agent();
 void Add_Or_Delete_Packages();
@@ -73,14 +73,16 @@ void clearbuffer();
 void Main_Menu();
 void Print_Orders_Agent();
 void Orders_confirmation();
-void printFriendList(string serialNum);
-void addToFriendList(User use, string serialNum);
-void makeAnOrder(User active_user, string serial_number);
+void Print_Friendlist(string serialNum);
+void Add_To_Friendlist(User use, string serialNum);
+void Make_An_Order(User active_user, string serial_number);
 bool Check_County(string country);
 void Print_Lead_List();
 void Print_Orders_Customer(User active_user);
 void Print_By_Serial(string serial_num);
 bool Check_If_Ordered(string user_name);
+void Decrease_Vacant_Spot(string serialNum);
+void Increase_To_Vacant_Spot(string serialNum);
 
 int main() {
 	cout << "\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t\t\t\t\t";
@@ -107,12 +109,12 @@ int main() {
 		std::cout << "\b\b\b\b\b\b\b\b\b\bLoading..." << std::flush;
 		Sleep(100);
 	}
-	while (sign_menu()) { system("CLS"); } //Opening sign in menu until it returns false (clears screan in between)
+	while (Sign_Menu()) { system("CLS"); } //Opening sign in menu until it returns false (clears screan in between)
 	return 1;
 }
 
 // login function
-bool sign_menu() {
+bool Sign_Menu() {
 
 	User active_user;
 	int choose;
@@ -120,7 +122,7 @@ bool sign_menu() {
 
 	// welcome
 	system("CLS");
-	print_active_user_message(active_user);
+	Print_Active_User_Message(active_user);
 	Main_Menu();
 	// start system
 	cin >> choose;
@@ -131,7 +133,7 @@ bool sign_menu() {
 	case 1://Sign in
 		flag = true;
 		system("CLS");
-		switch (sign_in(&active_user)) //Opening the Sign_in menu and gives what kind of user is being used. 
+		switch (Sign_In(&active_user)) //Opening the Sign_in menu and gives what kind of user is being used. 
 		{
 		case admin_login:
 			do
@@ -225,7 +227,7 @@ bool sign_menu() {
 				case 1:
 					//vacations search
 					//matan & hadar in the room
-					//vacation_search();
+					//Vacation_Search();
 					break;
 				case 2:
 					//show status for packages orders
@@ -257,7 +259,7 @@ bool sign_menu() {
 
 	case 2://Sign up
 		system("CLS");
-		sign_up();
+		Sign_Up();
 		return true;
 		break;
 
@@ -274,7 +276,7 @@ bool sign_menu() {
 }
 
 // sign-in function
-login_type sign_in(User* active_user)
+login_type Sign_In(User* active_user)
 {
 	string user, password;
 	cout << "\n\n\n\t\t\t\t\tEnter user name\n\n\t\t\t\t\t";
@@ -289,13 +291,13 @@ login_type sign_in(User* active_user)
 		active_user->lastName = "";
 		return admin_login;
 	}
-	if (!userCorrecrPass(user, password, active_user))
+	if (!User_Correcr_Pass(user, password, active_user))
 		return no_login;
-	return check_usertype(user);
+	return Check_User_type(user);
 	// cheak info
 }
 
-login_type check_usertype(string user)
+login_type Check_User_type(string user)
 {
 	ifstream DB_accounts;
 	DB_accounts.open("DB_accounts.txt");
@@ -318,7 +320,7 @@ login_type check_usertype(string user)
 	DB_accounts.close();
 }
 
-bool ExistingUser(string username)
+bool Existing_User(string username)
 {
 	ifstream DB_accounts;
 	DB_accounts.open("DB_accounts.txt");
@@ -347,7 +349,7 @@ bool ExistingUser(string username)
 	return false;
 }
 
-void writeUserToFile(User use)//entering data from struct to txt file
+void Write_User_To_File(User use)//entering data from struct to txt file
 {
 
 	fstream DB_accounts;
@@ -359,7 +361,7 @@ void writeUserToFile(User use)//entering data from struct to txt file
 	DB_accounts.close();
 }
 
-bool userCorrecrPass(string username, string password, User* active_user)
+bool User_Correcr_Pass(string username, string password, User* active_user)
 {
 	ifstream DB_accounts;
 	DB_accounts.open("DB_accounts.txt");
@@ -406,7 +408,7 @@ bool userCorrecrPass(string username, string password, User* active_user)
 }
 
 // function for aprove strong password
-bool strongPassword(string pass)
+bool Strong_Password(string pass)
 {
 	bool upper = false;
 	bool lower = false;
@@ -422,22 +424,22 @@ bool strongPassword(string pass)
 	return upper && lower && number;
 }
 
-void sign_up() {//new sign up
+void Sign_Up() {//new sign up
 	User use;
 	do {
 		//must enter a new username to continue
 		cout << "\n\n\n\t\t\tEnter user name\n\n\t\t\t";
 		cin >> use.userName;
-		if (ExistingUser(use.userName))
+		if (Existing_User(use.userName))
 			cout << "\n\n\n\t\t     This user already exist.\a";
-	} while (ExistingUser(use.userName));
+	} while (Existing_User(use.userName));
 	do {
 		//must enter a valid password
 		cout << "\n\n\n\t\t\tEnter password\n\n\t\t\t";
 		cin >> use.password;
-		if (!strongPassword(use.password))
+		if (!Strong_Password(use.password))
 			cout << "\n\n\n\t\t\tThis password is not strong enough \n    (Need to include an upper,lower and numiric character and 8 or more charecters).\a\n\t\t\t";
-	} while (!strongPassword(use.password));
+	} while (!Strong_Password(use.password));
 	cout << "\n\n\n\t\t\tEnter your first name\n\n\t\t\t";
 	cin >> use.firstName;
 	cout << "\n\n\t\t\tEnter your last name\n\n\t\t\t";
@@ -446,9 +448,9 @@ void sign_up() {//new sign up
 		//must enter 9 characters for valid passport
 		cout << "\n\n\n\t\t\tEnter your passport\n\n\t\t\t";
 		cin >> use.passport;
-		if (passportCheck(use.passport))
+		if (Passport_Check(use.passport))
 			cout << "\n\n\n\t   This passport in not valid, Please enter passport with maximum 8 charecters.\a";
-	} while (passportCheck(use.passport));//passport check
+	} while (Passport_Check(use.passport));//passport check
 	cout << "\n\n\t\t\tEnter your age\n\n\t\t\t";
 	cin >> use.age;
 	int g;
@@ -467,11 +469,11 @@ void sign_up() {//new sign up
 	cout << "\n\n\n\t\t\tEnter your phone number\n\n\t\t\t";
 	cin >> use.phoneNumber;
 	use.agent = false;
-	writeUserToFile(use);
+	Write_User_To_File(use);
 
 }
 
-bool passportCheck(string passport) {
+bool Passport_Check(string passport) {
 	if (passport.length() >= 8)
 	{
 		return true;
@@ -483,7 +485,7 @@ int Admin_Menu(User active_user)
 {
 	int choice;
 	system("CLS");
-	print_active_user_message(active_user);
+	Print_Active_User_Message(active_user);
 	printf("\n\n\n\t\t\t\t\t Admin menu\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   For agent menu.\n\n");
@@ -499,7 +501,7 @@ int Agent_Menu(User active_user)
 {
 	int choice;
 	system("CLS");
-	print_active_user_message(active_user);
+	Print_Active_User_Message(active_user);
 	printf("\n\n\n\t\t\t\t\t Agent menu\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   Lead list.\n\n");//done
@@ -516,7 +518,7 @@ int Customer_Menu(User active_user)
 {
 	int choice;
 	system("CLS");
-	print_active_user_message(active_user);
+	Print_Active_User_Message(active_user);
 	printf("\n\n\n\t\t\t\t\tCustomer\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   Search for a vacations package.\n\n");
@@ -612,7 +614,7 @@ void ContactWithAgent(User use) {
 	DB_massages.close();
 }
 
-void print_active_user_message(User active_user)
+void Print_Active_User_Message(User active_user)
 {
 	time_t t = time(NULL);
 	struct tm tm = *localtime(&t);
@@ -975,16 +977,19 @@ void Orders_confirmation() {
 	while (!DB_orders.eof()) {
 		if (i==choice)
 		{
+
 			cout << "1- To approve\n2- To decline\n(other number to skip)" << endl;
 			cin >> is_approved;
 			if (is_approved==1)
 			{
 				temp << "approve" << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << endl;
+				Decrease_Vacant_Spot(serial_num);
+
 			}
 			if (is_approved==2)
 			{
 				temp << "decline" << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << endl;
-
+				Increase_To_Vacant_Spot(serial_num);
 			}
 		}
 		else
@@ -1032,7 +1037,7 @@ void Print_Orders_Agent() {
 }
 //from here im adding func
 
-void printFriendList(string serialNum) {//added
+void Print_Friendlist(string serialNum) {//added
 	int age;
 	string serialN, firstName, lastName, phoneNumber, email, gen, seperator;
 
@@ -1052,7 +1057,7 @@ void printFriendList(string serialNum) {//added
 	system("pause");
 	DB_friendList.close();
 }
-void addToFriendList(User use, string serialNum) {//added
+void Add_To_Friendlist(User use, string serialNum) {//added
 	string Fname = use.firstName;
 	string Lname = use.lastName;
 	string phone = use.phoneNumber;
@@ -1075,7 +1080,7 @@ void addToFriendList(User use, string serialNum) {//added
 	DB_friendlist.close();
 }
 
-void makeAnOrder(User active_user, string serial_number)//added
+void Make_An_Order(User active_user, string serial_number)//added
 {
 
 	ofstream DB_orders;
@@ -1514,4 +1519,39 @@ bool Check_If_Ordered(string user_name)
 	} while (!DB_orders.eof());
 	DB_orders.close();
 	return false;
+}
+//maor
+void Increase_To_Vacant_Spot(string serialNum)
+{
+	fstream DB_packages;
+	DB_packages.open("DB_packages.txt");
+
+	if (DB_packages.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+
+	string serial_number, destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
+
+	fstream temp;
+	temp.open("temp.txt", ios::app);
+
+	do
+	{
+		if (serialNum == serial_number)
+		{
+			temp << serial_number << " " << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << (stoi(vacant_spots) + 1) << " " << price << "\n" << seperator << endl;
+			DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+		}
+		else
+		{
+			temp << serial_number << " " << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << vacant_spots << " " << price << "\n" << seperator << endl;
+			DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+		}
+	} while (!DB_packages.eof());
+
+	temp.close();
+	DB_packages.close();
+	remove("DB_packages.txt");
+	rename("temp.txt", "DB_packages.txt");
 }
