@@ -77,8 +77,10 @@ void printFriendList(string serialNum);
 void addToFriendList(User use, string serialNum);
 void makeAnOrder(User active_user, string serial_number);
 bool Check_County(string country);
-
-
+void Print_Lead_List();
+void Print_Orders_Customer(User active_user);
+void Print_By_Serial(string serial_num);
+bool Check_If_Ordered(string user_name);
 
 int main() {
 	cout << "\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t\t\t\t\t";
@@ -142,6 +144,7 @@ bool sign_menu() {
 					{
 					case 1:
 						//lead list- all the customers in DB 
+						Print_Lead_List();
 						break;
 					case 2:
 						//add and delete packages from DB
@@ -174,7 +177,7 @@ bool sign_menu() {
 					cout << "invalid choice" << endl;
 					break;
 				}
-
+				
 			} while (flag);
 			//Here will be a switch case with the functions of the admin menu
 			break;
@@ -186,6 +189,7 @@ bool sign_menu() {
 				{
 				case 1:
 					//lead list- all the customers in DB 
+					Print_Lead_List();
 					break;
 				case 2:
 					//add and delete packages from DB
@@ -220,10 +224,12 @@ bool sign_menu() {
 				{
 				case 1:
 					//vacations search
+					//matan & hadar in the room
 					//vacation_search();
 					break;
 				case 2:
 					//show status for packages orders
+					Print_Orders_Customer(active_user);
 					break;
 				case 3:
 					//get in contact with agent
@@ -496,10 +502,10 @@ int Agent_Menu(User active_user)
 	print_active_user_message(active_user);
 	printf("\n\n\n\t\t\t\t\t Agent menu\n\n\n\t\t\t");
 	printf("\t\t What would you like to do?\n\n");
-	printf("\t\t\t\t\t1-   Lead list.\n\n");
-	printf("\t\t\t\t\t2-   Add/Delete packages from the database.\n\n");
-	printf("\t\t\t\t\t3-   Respond to customer messages.\n\n");
-	printf("\t\t\t\t\t4-   Confirmation of customers orders.\n\n");
+	printf("\t\t\t\t\t1-   Lead list.\n\n");//done
+	printf("\t\t\t\t\t2-   Add/Delete packages from the database.\n\n");//done
+	printf("\t\t\t\t\t3-   Respond to customer messages.\n\n");//done
+	printf("\t\t\t\t\t4-   Confirmation of customers orders.\n\n");//done
 	printf("\t\t\t\t\t5-   Sign Out\n\n\t\t\t\t");
 	cin >> choice;
 	cout << "\n\n\t\t\t\t";
@@ -1069,7 +1075,6 @@ void addToFriendList(User use, string serialNum) {//added
 	DB_friendlist.close();
 }
 
-
 void makeAnOrder(User active_user, string serial_number)//added
 {
 
@@ -1400,4 +1405,113 @@ void Add_Packages()
 
 	DB_packages.close();
 
+}
+//luba
+void Print_Orders_Customer(User active_user) {
+	ifstream DB_orders;
+	DB_orders.open("DB_orders.txt");
+	if (DB_orders.fail())
+	{
+		cout << "ERROR: no file found\a" << endl;
+		return;
+	}
+	int i = 1;
+	string status, username, serial_num, credit_num, credit_exp, cvv;
+	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv;
+	while (!DB_orders.eof())
+	{
+		if (active_user.userName == username)
+		{
+			cout << "\n\t\t\t\tOrder number " << i << ":" << endl;
+			cout << "\n\n\t\t\t\t" << "Status: " << status << "\n\t\t\t\t";
+			Print_By_Serial(serial_num);
+			//cout << "\n\t\t\t~------------------------------------------------------------------------------------~" << endl;
+			i++;
+		}
+		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv;
+
+	}
+	DB_orders.close();
+
+}
+void Print_By_Serial(string serial_num)
+{
+	//system("CLS");
+	ifstream DB_packages;
+	DB_packages.open("DB_packages.txt");
+
+	if (DB_packages.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+	string serial_number, destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
+
+	DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	if (DB_packages.eof())
+	{
+		return;
+	}
+	do {
+		if (serial_num == serial_number)
+		{
+			cout << "\tSerial Num." << serial_number << endl;
+			cout << "\n\n\tDestenation: " << destenation << "  Origin: " << origin << "  Departure date: " << departure_date;
+			cout << "\n\n\tReturn date: " << return_date << "  Hotel: " << hotel << "  Flight company: " << flight_company << "  Flight number: " << flight_number << endl;
+			cout <<"\t" <<seperator << endl << endl;
+		}
+			DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	} while (!DB_packages.eof());
+
+
+	DB_packages.close();
+	//system("pause");
+}
+//hadar
+void Print_Lead_List() {
+	system("CLS");
+	ifstream DB_accounts;
+	string is_agent, FirstName, LastName, userN, passw, passp, gen, email, phone,age;
+	User use;
+	DB_accounts.open("DB_accounts.txt");
+	if (DB_accounts.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+	do {
+		DB_accounts >> is_agent >> FirstName >> LastName >> userN >> passw >> passp >> gen >> age >> email >> phone;
+		if (is_agent=="Customer:" && Check_If_Ordered(userN))
+		{
+			cout << "\n\n\n\n\t\t\t\tFirst Name: " << FirstName << "\tLast Name: " << LastName << "\tGender: " << gen << "\n\t\t\t\tEmail: " << email << "\tPhone: " << phone << endl;
+			use.userName = userN;
+			Print_Orders_Customer(use);
+		}
+
+		
+	} while (!DB_accounts.eof());
+	DB_accounts.close();
+	system("pause");
+}
+
+bool Check_If_Ordered(string user_name)
+{
+	ifstream DB_orders;
+	User use;
+	DB_orders.open("DB_orders.txt");
+	if (DB_orders.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+	string status, username, serial_num, credit_num, credit_exp, cvv;
+	do
+	{
+		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv;
+		if (user_name == username)
+		{
+			DB_orders.close();
+			return true;
+		}
+
+	} while (!DB_orders.eof());
+	DB_orders.close();
+	return false;
 }
