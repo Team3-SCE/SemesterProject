@@ -1,9 +1,0 @@
-123456 destenation origin departure_date return_date hotel flight_company flight_number vacant_spots price
-~~------------------------------------------------------------------------------------~~
-65484 destenation origin departure_date return_date hotel flight_company flight_number vacant_spots price
-~~------------------------------------------------------------------------------------~~
-741852 Maorichious Israel 0/20/20 12/15/33 California elal 3215 200 200$
-~~------------------------------------------------------------------------------------~~
-
-1212121 Maroko israel 12/12/12 51/15/98 lolol afds 1213 55 9999$\
-~~------------------------------------------------------------------------------------~~

@@ -1,5 +1,0 @@
-﻿  main.cpp
-C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Project\Project1\Project1\main.cpp(311,7): warning C4101: 'check': unreferenced local variable
-C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Project\Project1\Project1\main.cpp(159): warning C4715: 'sign_menu': not all control paths return a value
-C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Project\Project1\Project1\main.cpp(204): warning C4715: 'check_usertype': not all control paths return a value
-  Project1.vcxproj -> C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Project\Project1\x64\Debug\Project1.exe
