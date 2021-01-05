@@ -214,7 +214,8 @@ bool Sign_Menu() {
 					flag = false;
 					break;
 				default:
-					cout << "invalid choice" << endl;
+					cout << "Invalid choice, Please try again" << endl;
+					system("pause");
 					break;
 				}
 
@@ -248,7 +249,8 @@ bool Sign_Menu() {
 					flag = false;
 					break;
 				default:
-					cout << "invalid choice" << endl;
+					cout << "Invalid choice, Please try again" << endl;
+					system("pause");
 					break;
 				}
 
@@ -270,7 +272,8 @@ bool Sign_Menu() {
 				case 2:
 					//show status for packages orders
 					Print_Orders_Customer(active_user);//BUG
-					system("pause");
+					//system("pause");
+
 					break;
 				case 3:
 					//get in contact with agent
@@ -281,8 +284,8 @@ bool Sign_Menu() {
 					flag = false;
 					break;
 				default:
-					cout << "invalid choice" << endl;
-
+					cout << "Invalid choice, Please try again" << endl;
+					system("pause");
 					break;
 				}
 
@@ -1560,7 +1563,7 @@ void Print_Orders_Customer(User active_user) {
 		cout << "ERROR: no file found\a" << endl;
 		return;
 	}
-	int i = 1;
+	int i = 1,choice;
 	string status, username, serial_num, credit_num, credit_exp, cvv;
 	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv;
 	while (!DB_orders.eof())
@@ -1579,7 +1582,16 @@ void Print_Orders_Customer(User active_user) {
 
 	}
 	DB_orders.close();
-
+	cout << "\n\n\t\tIf you wish to remove one of the orders please select the number (0 to go back):\n\t\t\t\t ";
+	do
+	{
+		cin >> choice;
+		if (choice > i)
+		{
+			cout << "\n\t\t\t\tInvalid choice, Please select from the list above\n\t\t\t\t";
+		}
+	} while (choice>i);
+	//NEED TO DELETE PACKAGE FROM ORDERS DATABASE
 
 
 }
