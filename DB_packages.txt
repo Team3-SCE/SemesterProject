@@ -1,6 +1,0 @@
-destenation origin departure_date return_date hotel flight_company flight_number vacant_spots price
-~~------------------------------------------------------------------------------------~~
-destenation origin departure_date return_date hotel flight_company flight_number vacant_spots price
-~~------------------------------------------------------------------------------------~~
-Maorichious Israel 0/20/20 12/15/33 California elal 3215 200 200$
-~~------------------------------------------------------------------------------------~~
