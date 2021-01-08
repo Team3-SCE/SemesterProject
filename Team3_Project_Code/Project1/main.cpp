@@ -1875,7 +1875,7 @@ void Vacation_Search(User active_user) {
 
 		if (to == destenation && origin == from)
 			if (Date_Is_Inbetween(departure_date, departure_date_temp, return_date) && Date_Is_Inbetween(departure_date, return_date_temp, return_date))
-				if (stoi(passengers) <= stoi(vacant_spots))
+				if (stoi(passengers) <= stoi(vacant_spots) && stoi(vacant_spots) > 0)
 					if (stoi(min_price) <= stoi(price))
 						if (stoi(max_price) >= stoi(price))
 						{
@@ -1905,7 +1905,7 @@ void Vacation_Search(User active_user) {
 			DB_packages >> serial_number >> destenation >> origin >> departure_date_temp >> return_date_temp >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
 			if (to == destenation && origin == from)
 				if (Date_Is_Inbetween(departure_date, departure_date_temp, return_date) && Date_Is_Inbetween(departure_date, return_date_temp, return_date))
-					if (stoi(passengers) <= stoi(vacant_spots))
+					if (stoi(passengers) <= stoi(vacant_spots) && stoi(vacant_spots) > 0)
 						if (stoi(min_price) <= stoi(price))
 							if (stoi(max_price) >= stoi(price))
 							{
