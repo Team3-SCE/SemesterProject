@@ -1,6 +1,6 @@
 ﻿  main.cpp
-C:\Users\User\Downloads\Project-master\Project-master\Team3_Project_Code\Project1\main.cpp(1970,20): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\User\Downloads\Project-master\Project-master\Team3_Project_Code\Project1\main.cpp(319): warning C4715: 'Sign_Menu': not all control paths return a value
-C:\Users\User\Downloads\Project-master\Project-master\Team3_Project_Code\Project1\main.cpp(364): warning C4715: 'Check_User_type': not all control paths return a value
-C:\Users\User\Downloads\Project-master\Project-master\Team3_Project_Code\Project1\main.cpp(1118): warning C4715: 'Print_Friendlist': not all control paths return a value
-  Project1.vcxproj -> C:\Users\User\Downloads\Project-master\Project-master\Team3_Project_Code\x64\Debug\Project1.exe
+C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Project\Team3_Project_Code\Project1\main.cpp(1987,20): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Project\Team3_Project_Code\Project1\main.cpp(319): warning C4715: 'Sign_Menu': not all control paths return a value
+C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Project\Team3_Project_Code\Project1\main.cpp(364): warning C4715: 'Check_User_type': not all control paths return a value
+C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Project\Team3_Project_Code\Project1\main.cpp(1118): warning C4715: 'Print_Friendlist': not all control paths return a value
+  Project1.vcxproj -> C:\Users\User\Desktop\לימודים מאור\שנה ב'\יסודות הנדסת תוכנה\פרוייקט סמסטר\Project\Project\Team3_Project_Code\x64\Debug\Project1.exe

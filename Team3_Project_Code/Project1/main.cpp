@@ -92,7 +92,7 @@ void clearbuffer();
 //Opens the main menu and use switch cases to navigate between all of the screens
 void Main_Menu();
 //Prints all of the orders by all users , used by agent
-void Print_Orders_Agent();      
+void Print_Orders_Agent();
 //Confirm the as an agent 
 void Orders_Confirmation();
 //Prints all of the relevant friendlist contact info
@@ -114,7 +114,7 @@ void Print_By_Serial(string serial_num);
 bool Check_If_Ordered(string user_name);
 //after ordering changing the amount of available spots in the package
 void Decrease_Vacant_Spot(string serialNum, int passenger);
-void Increase_To_Vacant_Spot(string serialNum ,int passangers);
+void Increase_To_Vacant_Spot(string serialNum, int passangers);
 //checks if the dates are valid
 void Seperate(int* newyear, int* newmonth, int* newday, string date_string);//gives the dates as int values for Date_Check func
 bool Date_Check(string date);
@@ -1057,7 +1057,7 @@ void Print_Orders_Agent() {
 	int i = 1;
 	string status, username, serial_num, credit_num, credit_exp, cvv, passangers;
 	//DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv
-	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv>> passangers;
+	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
 	while (!DB_orders.eof())
 	{
 		if (status == "waiting")
@@ -1178,7 +1178,7 @@ void Make_An_Order(User active_user, string serial_number, int passenger)//added
 
 	} while (cvv.length() != 3);
 	Decrease_Vacant_Spot(serial_number, passenger);
-	DB_orders << "waiting " << active_user.userName << " " << serial_number << " " << credit_num << " " << credit_exp << " " << cvv <<" "<< passenger << endl;
+	DB_orders << "waiting " << active_user.userName << " " << serial_number << " " << credit_num << " " << credit_exp << " " << cvv << " " << passenger << endl;
 	DB_orders.close();
 	cout << "\n\n\n\n\t\t\t\tDo you wish to be in friend list?\n (other people will be able to see your contact details)\n\n\t\t\t\t1- yes\t2- no:\n\n\n\n\t\t\t\t";
 	do
@@ -1564,13 +1564,13 @@ void Print_Orders_Customer(User active_user) {
 		return;
 	}
 	int i = 1;
-	string status, username, serial_num, credit_num, credit_exp, cvv,passangers;
-	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv>> passangers;
+	string status, username, serial_num, credit_num, credit_exp, cvv, passangers;
+	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
 	while (!DB_orders.eof())
 	{
 		if (active_user.userName == username)
 		{
-			cout << "\n\n\t" << "Status: " << status << "\t\t\tPassangers: "<< passangers<< "\n\t\t\t\t";
+			cout << "\n\n\t" << "Status: " << status << "\t\t\tPassangers: " << passangers << "\n\t\t\t\t";
 			cout << "\n\t\t\t\tOrder number " << i << ":" << endl;
 			Print_By_Serial(serial_num);
 			//cout << "\n\t\t\t~------------------------------------------------------------------------------------~" << endl;
@@ -1578,11 +1578,11 @@ void Print_Orders_Customer(User active_user) {
 			//cout << "\n\t\t\tThe friend list:\n\n";
 			Print_Friendlist(serial_num, username);
 		}
-		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv>> passangers;
+		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
 
 	}
 	DB_orders.close();
-	
+
 	int choice;
 	cout << "\n\n\t\tIf you wish to remove one of the orders please select the number (0 to go back):\n\t\t\t\t ";
 	do
@@ -1673,7 +1673,7 @@ bool Check_If_Ordered(string user_name)
 	string status, username, serial_num, credit_num, credit_exp, cvv, passangers;
 	do
 	{
-		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv>> passangers;
+		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
 		if (user_name == username)
 		{
 			DB_orders.close();
@@ -1685,7 +1685,7 @@ bool Check_If_Ordered(string user_name)
 	return false;
 }
 //maor
-void Increase_To_Vacant_Spot(string serialNum , int passangers)
+void Increase_To_Vacant_Spot(string serialNum, int passangers)
 {
 	fstream DB_packages;
 	DB_packages.open("DB_packages.txt");
@@ -1882,16 +1882,26 @@ void Vacation_Search(User active_user) {
 	{
 		flag = false;
 		cin >> min_price;
-		for (size_t i = 0; i < min_price.length(); i++)
+		if (min_price > max_price)
 		{
-			if (min_price[i] < '0' || min_price[i]>'9') {
+			cout << "\n\n\n\t\t\t\tThe min price is invalid\n\n\n\t\t\t\t";
+			flag = true;
+		}
+		else {
+			for (size_t i = 0; i < min_price.length(); i++)
+			{
+				if (min_price[i] < '0' || min_price[i]>'9') {
 
-				flag = true;
-
+					flag = true;
+					cout << "\n\n\n\t\t\t\tYou entered digits\n\n\n\t\t\t\t";
+					break;
+				}
 			}
 		}
 		if (flag)
-			cout << "\n\n\n\t\t\t\tPlease enter only digits\n\n\n\t\t\t\t";
+		{
+			cout << "\n\n\n\t\t\t\tPlease enter again min price\n\n\n\t\t\t\t";
+		}
 
 	} while (flag);
 	system("CLS");
@@ -1903,37 +1913,44 @@ void Vacation_Search(User active_user) {
 	int i = 1;
 	flag = false;
 	DB_packages >> serial_number >> destenation >> origin >> departure_date_temp >> return_date_temp >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
-
+	string save_packs[1000];//add this
 	do
 	{
 
 		if (to == destenation && origin == from)
 			if (Date_Is_Inbetween(departure_date, departure_date_temp, return_date) && Date_Is_Inbetween(departure_date, return_date_temp, return_date))
-				if (stoi(passengers) <= stoi(vacant_spots))
+				if (stoi(passengers) <= stoi(vacant_spots) && stoi(vacant_spots) != 0)
 					if (stoi(min_price) <= stoi(price))
 						if (stoi(max_price) >= stoi(price))
 						{
 							//serials_file << serial_number;
 							cout << "Package number:" << i << "\tSerial Num." << serial_number << endl;
-							cout << "\n\n\tDestenation: " << destenation << "  Origin: " << origin << "  Departure date: " << departure_date;
-							cout << "\n\n\tReturn date: " << return_date << "  Hotel: " << hotel << "  Flight company: " << flight_company << "  Flight number: " << flight_number;
+							cout << "\n\n\tDestenation: " << destenation << "  Origin: " << origin << "  Departure date: " << departure_date_temp;
+							cout << "\n\n\tReturn date: " << return_date_temp << "  Hotel: " << hotel << "  Flight company: " << flight_company << "  Flight number: " << flight_number;
 							cout << "\n\n\tVaccent spots:" << vacant_spots << "  Price (per passenger): " << price << "$" << "\n\n";
 							cout << seperator << endl << endl;
+							save_packs[i] = serial_number;//add this
 							i++;
 							flag = true;
 						}
 		DB_packages >> serial_number >> destenation >> origin >> departure_date_temp >> return_date_temp >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
 
-	} while (!DB_packages.eof());
+	} while (!DB_packages.eof() && i < 1000);
+	DB_packages.close();
 	if (flag)
 	{
 		cout << "\t\tTerms & Conditions: You will receive appropriate advertisements related to your package\n" << endl;
 		cout << "\t\t\t\tPlease pick a package?\n";
 		cin >> user_choice;
 
-		i = 1;
-		DB_packages.close();
-		DB_packages.open("DB_packages.txt");
+		if (user_choice > 0 && user_choice < i)//add this
+		{
+
+			Make_An_Order(active_user, save_packs[user_choice], stoi(passengers));
+
+		}
+
+		/*delete this
 		do
 		{
 			DB_packages >> serial_number >> destenation >> origin >> departure_date_temp >> return_date_temp >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
@@ -1951,7 +1968,7 @@ void Vacation_Search(User active_user) {
 								}
 								++i;
 							}
-		} while (!DB_packages.eof());
+		} while (!DB_packages.eof());*/
 	}
 	else
 	{
@@ -2444,14 +2461,14 @@ void Orders_Confirmation() {
 				if (is_approved == 1)
 				{
 					// status = "approved"; 
-					temp2 << "approved " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv <<" "<< passangers<<endl;
+					temp2 << "approved " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << " " << passangers << endl;
 					//Decrease_Vacant_Spot(serial_num);
 
 				}
 				if (is_approved == 2)
 				{
 					status = "decline ";
-					temp2 << "decline" << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv <<" "<< passangers << endl;
+					temp2 << "decline" << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << " " << passangers << endl;
 					Increase_To_Vacant_Spot(serial_num, stoi(passangers));
 				}
 			}
@@ -2467,7 +2484,7 @@ void Orders_Confirmation() {
 			temp2 << status << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << " " << passangers << endl;
 
 		}
-		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers ;
+		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
 
 	}
 	if (exist == false)
@@ -2484,7 +2501,7 @@ void Orders_Confirmation() {
 
 }
 
-void Delete_Order_Customer(User active_user, int choice) 
+void Delete_Order_Customer(User active_user, int choice)
 {
 
 	ifstream DB_orders;
@@ -2504,7 +2521,7 @@ void Delete_Order_Customer(User active_user, int choice)
 		if (active_user.userName == username)
 		{
 			if (i != choice)//copy every order except users choice
-					temp_2 << status << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << " " << passangers << endl;
+				temp_2 << status << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << " " << passangers << endl;
 			else if (status != "decline")
 				Increase_To_Vacant_Spot(serial_num, stoi(passangers));
 			i++;
