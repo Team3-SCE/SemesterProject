@@ -72,7 +72,7 @@ void PrintDeleteUsersMassages();
 //Prints a specific greeting for each user(depends of the time of day)
 void Print_Active_User_Message(User);
 //Prints all of the users(used only by the admin)
-void PrintUsersToAdmin();
+int PrintUsersToAdmin();
 //Change a costumer user into an agent user (used by the admin)
 void Add_Agent();
 //Menu to add or delete packages (used by the agent)
@@ -108,6 +108,7 @@ bool Check_County(string country);
 void Print_Lead_List();
 //Prints all of the costumers orders
 void Print_Orders_Customer(User active_user);
+void Print_Orders_Customer2(User active_user);
 //Print a package by serial number
 void Print_By_Serial(string serial_num);
 //check if the customer has ordered - use for lead list
@@ -504,20 +505,13 @@ void Sign_Up() {//new sign up
 		for (size_t i = 0; i < _age.length(); i++)
 		{
 			if (_age[i] < '0' || _age[i]>'9') {
-
 				flag = true;
-
 			}
 		}
-
 		if (flag)
 			cout << "\n\n\n\t\t\t\tPlease enter only digits\n\n\n\t\t\t";
-
 	} while (flag);
 	use.age = stoi(_age);
-
-
-
 	int g;
 	do {
 		cout << "\n\n\n\t\t\tEnter gender: 1-male, 2-female\n\n\t\t\t";
@@ -535,14 +529,14 @@ void Sign_Up() {//new sign up
 	cin >> use.phoneNumber;
 	use.agent = false;
 	Write_User_To_File(use);
-
 }
 */
 bool Passport_Check(string passport) {
-	if (passport.length() <= 8)
+	if (passport.length() <= 8 && passport.length()>=6)
 	{
 		return true;
 	}
+	//cout << "\t\t\t\t\nInvalid passport, Please enter a new one with number of characters between 6 and 8" << endl;
 	return false;
 }
 
@@ -555,7 +549,7 @@ int Admin_Menu(User active_user)
 	printf("\t\t What would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   For agent menu.\n\n");
 	//Agent_Menu(active_user); if choice is 1
-	printf("\t\t\t\t\t2-   Make a user an agent.\n\n");
+	printf("\t\t\t\t\t2-   Change user type from DataBase (Agent/Customer).\n\n");
 	printf("\t\t\t\t\t3-   Sign Out\n\n\t\t\t\t");
 
 	cin >> choice;
@@ -716,7 +710,7 @@ void Print_Active_User_Message(User active_user)
 	cout << "\n\t" << day_greeting << " " << active_user.firstName << " " << active_user.lastName << endl << endl;
 }
 
-void PrintUsersToAdmin() {
+int PrintUsersToAdmin() {
 	system("CLS");
 	/* ifstream file("DB_accounts.txt");
 		cout << file.rdbuf();; print all the DB the way it is*/
@@ -725,7 +719,7 @@ void PrintUsersToAdmin() {
 	if (DB_accounts.fail())
 	{
 		cout << "ERROR: no file found\a" << endl;
-		return;
+		return 0;
 	}
 	int i = 0;
 	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
@@ -740,7 +734,7 @@ void PrintUsersToAdmin() {
 		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
 	}
 	DB_accounts.close();
-
+	return i;
 }
 //
 //void Add_Agent() {
@@ -1454,7 +1448,6 @@ void Add_Packages()
 	cin >> destenation;
 	if (destenation[0] >= 'a' && destenation[0] <= 'z')
 	{
-
 		destenation[0] = destenation[0] - 32;
 	}
 	while (!Check_County(destenation))
@@ -1463,12 +1456,10 @@ void Add_Packages()
 		cout << "\n\n\n\t\t\tEnter destenation\n\n\t\t\t";
 		cin >> destenation;
 	}
-
 	cout << "\n\n\n\t\t\tEnter origin\n\n\t\t\t";
 	cin >> origin;
 	if (origin[0] >= 'a' && origin[0] <= 'z')
 	{
-
 		origin[0] = origin[0] - 32;
 	}
 	while (!Check_County(origin))
@@ -1477,7 +1468,6 @@ void Add_Packages()
 		cout << "\n\n\n\t\t\tEnter origin\n\n\t\t\t";
 		cin >> origin;
 	}
-
 	cout << "\n\n\n\t\t\tEnter departure date\n\n\t\t\t";
 	cin >> departure_date;
 	cout << "\n\n\n\t\t\tEnter return date\n\n\t\t\t";
@@ -1497,18 +1487,12 @@ void Add_Packages()
 		for (size_t i = 0; i < vacant_spots.length(); i++)
 		{
 			if (vacant_spots[i] < '0' || vacant_spots[i]>'9') {
-
 				flag = true;
-
-
 			}
 		}
 		if (flag)
 			cout << "\n\n\n\t\t\t\tPlease enter only digits\n\n\n\t\t\t";
-
 	} while (flag);
-
-
 	cout << "\n\n\n\t\t\tEnter price (in dollars)\n\n\t\t\t";
 	do
 	{
@@ -1517,17 +1501,12 @@ void Add_Packages()
 		for (size_t i = 0; i < price.length(); i++)
 		{
 			if (price[i] < '0' || price[i]>'9') {
-
 				flag = true;
-
 			}
 		}
 		if (flag)
 			cout << "\n\n\n\t\t\t\tPlease enter only digits\n\n\n\t\t\t";
-
 	} while (flag);
-
-
 	do
 	{
 		cout << "\n\n\n\t\t\tEnter serial number\n\n\t\t\t";
@@ -1537,25 +1516,18 @@ void Add_Packages()
 			cerr << "\n\n\n\t\t\t This serial number is not avilable.\n\n\a";
 		}
 	} while (!Is_Serial_Num_Avilable(serial_number));
-
-
 	fstream DB_packages;
 	DB_packages.open("DB_packages.txt", ios::app);
-
 	if (DB_packages.fail())
 	{
 		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
 	}
-
 	DB_packages << endl << serial_number << " " << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << vacant_spots << " " << price << "\n";
 	DB_packages << "~------------------------------------------------------------------------------------~" << endl;
-
 	DB_packages.close();
-
 }*/
 //luba
-void Print_Orders_Customer(User active_user) {
-	system("clear");
+void Print_Orders_Customer2(User active_user) {
 	ifstream DB_orders;
 	DB_orders.open("DB_orders.txt");
 	if (DB_orders.fail())
@@ -1576,13 +1548,50 @@ void Print_Orders_Customer(User active_user) {
 			//cout << "\n\t\t\t~------------------------------------------------------------------------------------~" << endl;
 			i++;
 			//cout << "\n\t\t\tThe friend list:\n\n";
+			/*Print_Friendlist(serial_num, username);*/
+		}
+		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
+
+	}
+	DB_orders.close();
+}
+
+void Print_Orders_Customer(User active_user) {
+	ifstream DB_orders;
+	DB_orders.open("DB_orders.txt");
+	if (DB_orders.fail())
+	{
+		cout << "ERROR: no file found\a" << endl;
+		return;
+	}
+	int i = 1;
+	bool flag = false;
+	string status, username, serial_num, credit_num, credit_exp, cvv, passangers;
+	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
+	while (!DB_orders.eof())
+	{
+		if (active_user.userName == username)
+		{
+			cout << "\n\n\t" << "Status: " << status << "\t\t\tPassangers: " << passangers << "\n\t\t\t\t";
+			cout << "\n\t\t\t\tOrder number " << i << ":" << endl;
+			Print_By_Serial(serial_num);
+			//cout << "\n\t\t\t~------------------------------------------------------------------------------------~" << endl;
+			i++;
+			//cout << "\n\t\t\tThe friend list:\n\n";
 			Print_Friendlist(serial_num, username);
+			flag = true;
 		}
 		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
 
 	}
 	DB_orders.close();
 
+	if (flag == false) {
+		cout << "\n\t\t\t\tNo orders found" << endl;
+		//system("pause");
+		return;
+	}
+		
 	int choice;
 	cout << "\n\n\t\tIf you wish to remove one of the orders please select the number (0 to go back):\n\t\t\t\t ";
 	do
@@ -1598,7 +1607,7 @@ void Print_Orders_Customer(User active_user) {
 		return;
 	Delete_Order_Customer(active_user, choice);
 	system("pause");
-	system("clear");
+	system("CLS");
 	cout << "\n\n\n\n\t\t\tThe database has been updated succesfully\n\n\n\n\t\t\t";
 
 
@@ -1652,7 +1661,7 @@ void Print_Lead_List() {
 		{
 			cout << "\n\n\n\n\t\t\t\tFirst Name: " << FirstName << "\tLast Name: " << LastName << "\tGender: " << gen << "\n\t\t\t\tEmail: " << email << "\tPhone: " << phone << endl;
 			use.userName = userN;
-			Print_Orders_Customer(use);
+			Print_Orders_Customer2(use);
 		}
 
 
@@ -1882,7 +1891,7 @@ void Vacation_Search(User active_user) {
 	{
 		flag = false;
 		cin >> min_price;
-		if (min_price > max_price)
+		if (stoi(min_price) > stoi(max_price) &&  (stoi(max_price) != 0))
 		{
 			cout << "\n\n\n\t\t\t\tThe min price is invalid\n\n\n\t\t\t\t";
 			flag = true;
@@ -1910,7 +1919,7 @@ void Vacation_Search(User active_user) {
 		max_price = "99999999";//defualt value
 	if (min_price[0] == '0')
 		min_price = "1";//defualt value
-	int i = 1;
+	int i = 0;
 	flag = false;
 	DB_packages >> serial_number >> destenation >> origin >> departure_date_temp >> return_date_temp >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
 	string save_packs[1000];//add this
@@ -1919,10 +1928,11 @@ void Vacation_Search(User active_user) {
 
 		if (to == destenation && origin == from)
 			if (Date_Is_Inbetween(departure_date, departure_date_temp, return_date) && Date_Is_Inbetween(departure_date, return_date_temp, return_date))
-				if (stoi(passengers) <= stoi(vacant_spots))
+				if (stoi(passengers) <= stoi(vacant_spots) && stoi(vacant_spots) != 0)
 					if (stoi(min_price) <= stoi(price))
 						if (stoi(max_price) >= stoi(price))
 						{
+							i++;
 							//serials_file << serial_number;
 							cout << "Package number:" << i << "\tSerial Num." << serial_number << endl;
 							cout << "\n\n\tDestenation: " << destenation << "  Origin: " << origin << "  Departure date: " << departure_date_temp;
@@ -1930,20 +1940,27 @@ void Vacation_Search(User active_user) {
 							cout << "\n\n\tVaccent spots:" << vacant_spots << "  Price (per passenger): " << price << "$" << "\n\n";
 							cout << seperator << endl << endl;
 							save_packs[i] = serial_number;//add this
-							i++;
 							flag = true;
 						}
 		DB_packages >> serial_number >> destenation >> origin >> departure_date_temp >> return_date_temp >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
 
-	} while (!DB_packages.eof());
+	} while (!DB_packages.eof() && i < 1000);
 	DB_packages.close();
 	if (flag)
 	{
 		cout << "\t\tTerms & Conditions: You will receive appropriate advertisements related to your package\n" << endl;
-		cout << "\t\t\t\tPlease pick a package?\n";
-		cin >> user_choice;
+		cout << "\t\t\t\tPlease pick a package? (0 to return)\n\t\t\t\t";
+		
+		do {
+			cin >> user_choice;
+			if (user_choice > i || user_choice < 0) 
+				cout << "\n\n\n\t\t\t\tInvalid input.\n\n\n\t\t\t\t";
+		} while (user_choice > i || user_choice < 0 );
 
-		if (user_choice > 0 && user_choice < i)//add this
+		if (user_choice == 0)
+			return;
+
+		if (user_choice > 0 && user_choice < i+1)//add this
 		{
 
 			Make_An_Order(active_user, save_packs[user_choice], stoi(passengers));
@@ -2025,9 +2042,9 @@ bool Date_Is_Inbetween(string datemin, string date, string datemax)
 {
 	int daymin = 0, day = 0, daymax = 0, monthmin = 0, month = 0, monthmax = 0, yearmin = 0, year = 0, yearmax = 0;
 
-	Seperate(&yearmin, &monthmin, &daymin, datemin);
-	Seperate(&year, &month, &day, date);
-	Seperate(&yearmax, &monthmax, &daymax, datemax);
+	Seperate(&yearmin, &daymin, &monthmin, datemin);
+	Seperate(&year, &day, &month, date);
+	Seperate(&yearmax, &daymax, &monthmax, datemax);
 
 	bool min = true, max = true;
 
@@ -2102,21 +2119,21 @@ bool Date_Check(string date)
 		}
 
 	}
-	if (year < 2020)
+	if (year < 2021)
 	{
-		cout << "\n\n\n\n\t\t\t\tinvalid year\a" << endl;
+		cout << "\n\n\n\n\t\t\t\tinvalid year (Cannot choose a date from the past)\a" << endl;
 		return false;
 
 	}
-	else if (year == 2020 && month < (tm.tm_mon + 1))
+	else if (year == 2021 && month < (tm.tm_mon + 1))
 	{
-		cout << "\n\n\n\n\t\t\t\tinvalid month\a" << endl;
+		cout << "\n\n\n\n\t\t\t\tinvalid month (Cannot choose a date from the past)\a" << endl;
 		return false;
 
 	}
-	else if (year == 2020 && month == (tm.tm_mon + 1) && day < tm.tm_mday)
+	else if (year == 2021 && month == (tm.tm_mon + 1) && day < tm.tm_mday)
 	{
-		cout << "\n\n\n\n\t\t\t\tinvalid day\a" << endl;
+		cout << "\n\n\n\n\t\t\t\tinvalid day (Cannot choose a date from the past)\a" << endl;
 		return false;
 
 	}
@@ -2161,7 +2178,7 @@ void Sign_Up() //***after fix
 		cout << "\n\n\n\t\t\tEnter your passport\n\n\t\t\t";
 		cin >> use.passport;
 		if (!Passport_Check(use.passport))
-			cout << "\n\n\n\t   This passport in not valid, Please enter passport with maximum 8 charecters.\a";
+			cout << "\n\n\n\t   This passport in not valid, Please enter passport with maximum 8 and minimum 6 charecters.\a";
 	} while (!Passport_Check(use.passport));//passport check
 	cout << "\n\n\t\t\tEnter your age\n\n\t\t\t";
 	bool flag = false;
@@ -2206,12 +2223,28 @@ void Sign_Up() //***after fix
 
 }
 void Add_Agent() {
-	PrintUsersToAdmin();
-	int choice, i = 0;
-	cout << "Which user do you wish to make as Agent? (0 To go back)" << endl;
+	int j=PrintUsersToAdmin();
+	int choice, choice2, i = 0;
+	cout << "Which user do you wish to make an Agent or a Customer? (0 To go back)" ;
 	cin >> choice;
 	if (choice == 0)
 		return;
+	if (choice > j || choice < 0)
+	{
+		cout << "\n\n\n\t\t\t\tYou entered a number not from list, Database has not changed\n\n\n\n\t\t\t\t";
+		system("pause");
+		return;
+
+	}
+	system("CLS");
+	do
+	{
+		cout << "\n\n\n\t\t\t\tDo you want to make this user an agent or a customer user (0 to go back)\n\n\n\t\t\t\t1- an agent \n\n\t\t\t\t2- a costumer \n\n\n\t\t\t\t";
+		cin >> choice2;
+		if (choice2 < 0 && choice2 > 2)
+			cout << "\t\t\t\tThis input is invalid\n\n";
+	} while (choice2 < 0 && choice2 > 2);
+
 	choice -= 1;
 	string agent = "Agent: ";
 	string customer = "Customer: ";
@@ -2228,7 +2261,7 @@ void Add_Agent() {
 	while (!DB_accounts.eof()) {
 		if (i == choice)
 		{
-			is_agent = agent;
+			is_agent = choice2==1? agent: customer;
 			temp << is_agent << FirstName << " " << lastName << " " << UserName << " " << PW << " " << PP << " " << Gender << " " << Age << " " << Email << " " << PhoneNumber << "\n" << seperator << endl;
 
 		}
@@ -2243,16 +2276,10 @@ void Add_Agent() {
 
 	temp.close();
 	DB_accounts.close();
-	if (choice > i - 1 || choice < 0)
-	{
-		cout << "You entered a number not from list, Database has not changed" << endl;
+	
+	
+	cout << "\n\n\n\n\t\t\t\tUpdated databse\n\n\n\n\t\t\t\t";
 
-	}
-	else
-	{
-		cout << "Updated databse" << endl;
-
-	}
 	system("pause");
 	remove("DB_accounts.txt");
 	rename("temp.txt", "DB_accounts.txt");
@@ -2294,7 +2321,7 @@ void Delete_Packages() {
 	DB_packages.close();
 	if (choice > i)
 	{
-		cout << "\n\n\n\t\t\t\tThe chosen package is not exist\n\n\t\t\t" << endl;
+		cout << "\n\n\n\t\t\t\tThe chosen package does not exist\n\n\t\t\t" << endl;
 		system("pause");
 
 	}
