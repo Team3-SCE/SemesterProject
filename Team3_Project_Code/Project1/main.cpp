@@ -65,13 +65,14 @@ bool Passport_Check(string);
 login_type Check_User_type(string);
 //Users Menus
 int Admin_Menu(User active_user);
+int Agent_Menu_For_Admin(User active_user);
 int Agent_Menu(User active_user);
 int Customer_Menu(User active_user);
 void PrintDeleteUsersMassages();
 //Prints a specific greeting for each user(depends of the time of day)
 void Print_Active_User_Message(User);
 //Prints all of the users(used only by the admin)
-void PrintUsersToAdmin();
+int PrintUsersToAdmin();
 //Change a costumer user into an agent user (used by the admin)
 void Add_Agent();
 //Menu to add or delete packages (used by the agent)
@@ -107,18 +108,21 @@ bool Check_County(string country);
 void Print_Lead_List();
 //Prints all of the costumers orders
 void Print_Orders_Customer(User active_user);
+void Print_Orders_Customer2(User active_user);
 //Print a package by serial number
 void Print_By_Serial(string serial_num);
 //check if the customer has ordered - use for lead list
 bool Check_If_Ordered(string user_name);
 //after ordering changing the amount of available spots in the package
 void Decrease_Vacant_Spot(string serialNum, int passenger);
-void Increase_To_Vacant_Spot(string serialNum);
+void Increase_To_Vacant_Spot(string serialNum, int passangers);
 //checks if the dates are valid
 void Seperate(int* newyear, int* newmonth, int* newday, string date_string);//gives the dates as int values for Date_Check func
 bool Date_Check(string date);
 bool Date_Is_Inbetween(string datemin, string date, string datemax);//checks if the dates are between each other
 bool Date_Check2(string date);
+//delete an order for a costumer
+void Delete_Order_Customer(User active_user, int choice);
 
 
 int main() {
@@ -179,7 +183,7 @@ bool Sign_Menu() {
 
 				switch (Admin_Menu(active_user)) {
 				case 1:
-					switch (Agent_Menu(active_user))
+					switch (Agent_Menu_For_Admin(active_user))
 					{
 					case 1:
 						//lead list- all the customers in DB 
@@ -213,7 +217,8 @@ bool Sign_Menu() {
 					flag = false;
 					break;
 				default:
-					cout << "invalid choice" << endl;
+					cout << "\n\n\n\t\t\t\tInvalid choice, Please try again\n\n\n\n\t\t\t\t" << endl;
+					system("pause");
 					break;
 				}
 
@@ -247,7 +252,8 @@ bool Sign_Menu() {
 					flag = false;
 					break;
 				default:
-					cout << "invalid choice" << endl;
+					cout << "\n\n\n\t\t\t\tInvalid choice, Please try again\n\n\n\n\t\t\t\t" << endl;
+					system("pause");
 					break;
 				}
 
@@ -280,8 +286,8 @@ bool Sign_Menu() {
 					flag = false;
 					break;
 				default:
-					cout << "invalid choice" << endl;
-
+					cout << "\n\n\n\t\t\t\tInvalid choice, Please try again\n\n\n\n\t\t\t\t" << endl;
+					system("pause");
 					break;
 				}
 
@@ -461,7 +467,7 @@ bool Strong_Password(string pass)
 				number = true;
 	return upper && lower && number;
 }
-
+/*
 void Sign_Up() {//new sign up
 	User use;
 	string _age;
@@ -499,20 +505,13 @@ void Sign_Up() {//new sign up
 		for (size_t i = 0; i < _age.length(); i++)
 		{
 			if (_age[i] < '0' || _age[i]>'9') {
-
 				flag = true;
-
 			}
 		}
-
 		if (flag)
 			cout << "\n\n\n\t\t\t\tPlease enter only digits\n\n\n\t\t\t";
-
 	} while (flag);
 	use.age = stoi(_age);
-
-
-
 	int g;
 	do {
 		cout << "\n\n\n\t\t\tEnter gender: 1-male, 2-female\n\n\t\t\t";
@@ -530,14 +529,14 @@ void Sign_Up() {//new sign up
 	cin >> use.phoneNumber;
 	use.agent = false;
 	Write_User_To_File(use);
-
 }
-
+*/
 bool Passport_Check(string passport) {
-	if (passport.length() <= 8)
+	if (passport.length() <= 8 && passport.length()>=6)
 	{
 		return true;
 	}
+	//cout << "\t\t\t\t\nInvalid passport, Please enter a new one with number of characters between 6 and 8" << endl;
 	return false;
 }
 
@@ -550,13 +549,35 @@ int Admin_Menu(User active_user)
 	printf("\t\t What would you like to do?\n\n");
 	printf("\t\t\t\t\t1-   For agent menu.\n\n");
 	//Agent_Menu(active_user); if choice is 1
-	printf("\t\t\t\t\t2-   Make a user an agent.\n\n");
+	printf("\t\t\t\t\t2-   Change user type from DataBase (Agent/Customer).\n\n");
 	printf("\t\t\t\t\t3-   Sign Out\n\n\t\t\t\t");
+
 	cin >> choice;
 	cout << "\n\n\t\t\t\t";
 	return choice;
 }
-
+int Agent_Menu_For_Admin(User active_user)
+{
+	int choice;
+	system("CLS");
+	Print_Active_User_Message(active_user);
+	printf("\n\n\n\t\t\t\t\t Agent menu\n\n\n\t\t\t");
+	printf("\t\t What would you like to do?\n\n");
+	printf("\t\t\t\t\t1-   Lead list.\n\n");//done
+	printf("\t\t\t\t\t2-   Add/Delete packages from the database.\n\n");//done
+	printf("\t\t\t\t\t3-   Respond to customer messages.\n\n");//done
+	printf("\t\t\t\t\t4-   Confirmation of customers orders.\n\n");//done
+	printf("\t\t\t\t\t5-   Sign Out\n\n\t\t\t\t");
+	printf("\t6 or above back to admin menu\n\n\t\t\t\t");
+	do
+	{
+		cin >> choice;
+		if (choice == 0)
+			cout << "\t\t\t\t0 is not in the list please select from the list above" << endl << "\t\t\t\t";
+	} while (choice == 0);
+	cout << "\n\n\t\t\t\t";
+	return choice;
+}
 int Agent_Menu(User active_user)
 {
 	int choice;
@@ -625,7 +646,12 @@ void PrintDeleteUsersMassages() {
 
 	int choice;
 	cout << "Which message you took care of? (WARNING: the number you pick will be removed from databse)\n\n\n\t\t\t\t To go back enter " << i + 1 << " or above" << endl;
-	cin >> choice;
+	do
+	{
+		cin >> choice;
+		if ((!(choice > 0)))
+			cout << "\n\t\t\tPlease chose a valid number from the list" << endl;
+	} while (!(choice > 0));
 	i = 1;
 	ofstream temp;
 	temp.open("temp.txt", ios::app);
@@ -684,7 +710,7 @@ void Print_Active_User_Message(User active_user)
 	cout << "\n\t" << day_greeting << " " << active_user.firstName << " " << active_user.lastName << endl << endl;
 }
 
-void PrintUsersToAdmin() {
+int PrintUsersToAdmin() {
 	system("CLS");
 	/* ifstream file("DB_accounts.txt");
 		cout << file.rdbuf();; print all the DB the way it is*/
@@ -693,7 +719,7 @@ void PrintUsersToAdmin() {
 	if (DB_accounts.fail())
 	{
 		cout << "ERROR: no file found\a" << endl;
-		return;
+		return 0;
 	}
 	int i = 0;
 	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
@@ -708,49 +734,49 @@ void PrintUsersToAdmin() {
 		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
 	}
 	DB_accounts.close();
-
+	return i;
 }
-
-void Add_Agent() {
-	PrintUsersToAdmin();
-	int choice, i = 0;
-	cout << "Which user do you wish to make as Agent? (0 To go back)" << endl;
-	cin >> choice;
-	if (choice == 0)
-		return;
-	choice -= 1;
-	string agent = "Agent: ";
-	string customer = "Customer: ";
-	ifstream DB_accounts;
-	ofstream temp;
-
-	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
-
-	DB_accounts.open("DB_accounts.txt", ios::out);
-	temp.open("temp.txt", ios::app);
-	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
-
-	while (!DB_accounts.eof()) {
-		if (i == choice)
-		{
-			is_agent = agent;
-			temp << is_agent << FirstName << " " << lastName << " " << UserName << " " << PW << " " << PP << " " << Gender << " " << Age << " " << Email << " " << PhoneNumber << "\n" << seperator << endl;
-
-		}
-		else
-		{
-			temp << is_agent << " " << FirstName << " " << lastName << " " << UserName << " " << PW << " " << PP << " " << Gender << " " << Age << " " << Email << " " << PhoneNumber << "\n" << seperator << endl;
-
-		}
-		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
-		++i;
-	}
-	temp.close();
-	DB_accounts.close();
-	cout << "Updated databse" << endl;
-	remove("DB_accounts.txt");
-	rename("temp.txt", "DB_accounts.txt");
-}
+//
+//void Add_Agent() {
+//	PrintUsersToAdmin();
+//	int choice, i = 0;
+//	cout << "Which user do you wish to make as Agent? (0 To go back)" << endl;
+//	cin >> choice;
+//	if (choice == 0)
+//		return;
+//	choice -= 1;
+//	string agent = "Agent: ";
+//	string customer = "Customer: ";
+//	ifstream DB_accounts;
+//	ofstream temp;
+//
+//	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
+//
+//	DB_accounts.open("DB_accounts.txt", ios::out);
+//	temp.open("temp.txt", ios::app);
+//	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+//
+//	while (!DB_accounts.eof()) {
+//		if (i == choice)
+//		{
+//			is_agent = agent;
+//			temp << is_agent << FirstName << " " << lastName << " " << UserName << " " << PW << " " << PP << " " << Gender << " " << Age << " " << Email << " " << PhoneNumber << "\n" << seperator << endl;
+//
+//		}
+//		else
+//		{
+//			temp << is_agent << " " << FirstName << " " << lastName << " " << UserName << " " << PW << " " << PP << " " << Gender << " " << Age << " " << Email << " " << PhoneNumber << "\n" << seperator << endl;
+//
+//		}
+//		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+//		++i;
+//	}
+//	temp.close();
+//	DB_accounts.close();
+//	cout << "Updated databse" << endl;
+//	remove("DB_accounts.txt");
+//	rename("temp.txt", "DB_accounts.txt");
+//}
 
 void Add_Or_Delete_Packages() {
 	system("CLS");
@@ -784,54 +810,54 @@ void Add_Or_Delete_Packages() {
 		return;
 	}
 }
-
-void Delete_Packages() {
-
-	int choice;
-	ifstream DB_packages;
-	DB_packages.open("DB_packages.txt");
-	if (DB_packages.fail())
-	{
-		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
-	}
-
-	string serial_number, destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
-	DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
-	if (DB_packages.eof())
-	{
-		cerr << "\n\n\t\t\t\t No packages found in database" << endl;
-		system("pause");
-		return;
-	}
-	cout << "\n\n\n\n\t\t\t\tWhich package do you wish to remove (0 To Go back)" << endl;
-	cin >> choice;
-	if (choice == 0)
-		return;
-	ofstream temp;
-	temp.open("temp.txt");
-	int i;
-	for (i = 1; (!DB_packages.eof()); i++)
-	{
-		if (i != choice)
-		{
-			temp << serial_number << " " << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << vacant_spots << " " << price << "\n" << seperator << endl;
-		}
-		DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
-	}
-	temp.close();
-	DB_packages.close();
-	if (choice > i)
-	{
-		cout << "The chosen package is not exist" << endl;
-	}
-	else
-	{
-		cout << "Removed package!" << endl;
-	}
-	remove("DB_packages.txt");
-	rename("temp.txt", "DB_packages.txt");
-	print_packages();
-}
+//
+//void Delete_Packages() {
+//
+//	int choice;
+//	ifstream DB_packages;
+//	DB_packages.open("DB_packages.txt");
+//	if (DB_packages.fail())
+//	{
+//		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+//	}
+//
+//	string serial_number, destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
+//	DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+//	if (DB_packages.eof())
+//	{
+//		cerr << "\n\n\t\t\t\t No packages found in database" << endl;
+//		system("pause");
+//		return;
+//	}
+//	cout << "\n\n\n\n\t\t\t\tWhich package do you wish to remove (0 To Go back)" << endl;
+//	cin >> choice;
+//	if (choice == 0)
+//		return;
+//	ofstream temp;
+//	temp.open("temp.txt");
+//	int i;
+//	for (i = 1; (!DB_packages.eof()); i++)
+//	{
+//		if (i != choice)
+//		{
+//			temp << serial_number << " " << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << vacant_spots << " " << price << "\n" << seperator << endl;
+//		}
+//		DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+//	}
+//	temp.close();
+//	DB_packages.close();
+//	if (choice > i)
+//	{
+//		cout << "The chosen package is not exist" << endl;
+//	}
+//	else
+//	{
+//		cout << "Removed package!" << endl;
+//	}
+//	remove("DB_packages.txt");
+//	rename("temp.txt", "DB_packages.txt");
+//	print_packages();
+//}
 
 void print_packages()
 {
@@ -939,81 +965,81 @@ void Main_Menu() {
 	printf("\t\t\t\t\t2-   Sign Up\n\n");
 	printf("\t\t\t\t\t3-   Exit\n\n\t\t\t");
 }
-void Orders_Confirmation() {
-	//need to open packages DB and take serial number 
-	//need to open text file(DB) for payment and customer username
-	//print the orders
-	Print_Orders_Agent();
-	//cin->choice which one package do you wish to remove
-	int choice, i = 1;
-	cout << "Which package do you want to approved/decline? (0 to cancel)" << endl;
-	cin >> choice;
-	if (choice == 0)
-	{
-		return;
-	}
-
-	//then need to -1 from package database 
-	//then to replace from waiting to approved or decline in order DB
-	ifstream DB_orders;
-	DB_orders.open("DB_orders.txt");
-	if (DB_orders.fail())
-	{
-		cout << "ERROR: no file found\a" << endl;
-		return;
-	}
-	ofstream temp2;
-	temp2.open("temp2.txt", ios::app);
-	string status, username, serial_num, credit_num, credit_exp, cvv;
-	int is_approved;
-	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv;
-
-	while (!DB_orders.eof()) {
-		if (status == "waiting")
-		{
-
-			if (i == choice)
-			{
-
-				cout << "1- To approve\n2- To decline\n(other number to skip)" << endl;
-				cin >> is_approved;
-				if (is_approved == 1)
-				{
-					/*status = "approved";*/
-					temp2 << "approved " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << endl;
-					//Decrease_Vacant_Spot(serial_num);
-
-				}
-				if (is_approved == 2)
-				{
-					status = "decline ";
-					temp2 << "decline" << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << endl;
-					Increase_To_Vacant_Spot(serial_num);
-				}
-			}
-			else
-			{
-				temp2 << status << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << endl;
-			}
-			++i;
-
-		}
-		else
-		{
-			temp2 << status << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << endl;
-
-		}
-		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv;
-
-	}
-
-	temp2.close();
-	DB_orders.close();
-	remove("DB_orders.txt");
-	rename("temp2.txt", "DB_orders.txt");
-
-
-}
+//void Orders_Confirmation() {
+//	//need to open packages DB and take serial number 
+//	//need to open text file(DB) for payment and customer username
+//	//print the orders
+//	Print_Orders_Agent();
+//	//cin->choice which one package do you wish to remove
+//	int choice, i = 1;
+//	cout << "Which package do you want to approved/decline? (0 to cancel)" << endl;
+//	cin >> choice;
+//	if (choice == 0)
+//	{
+//		return;
+//	}
+//
+//	//then need to -1 from package database 
+//	//then to replace from waiting to approved or decline in order DB
+//	ifstream DB_orders;
+//	DB_orders.open("DB_orders.txt");
+//	if (DB_orders.fail())
+//	{
+//		cout << "ERROR: no file found\a" << endl;
+//		return;
+//	}
+//	ofstream temp2;
+//	temp2.open("temp2.txt", ios::app);
+//	string status, username, serial_num, credit_num, credit_exp, cvv;
+//	int is_approved;
+//	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv;
+//
+//	while (!DB_orders.eof()) {
+//		if (status == "waiting")
+//		{
+//
+//			if (i == choice)
+//			{
+//
+//				cout << "1- To approve\n2- To decline\n(other number to skip)" << endl;
+//				cin >> is_approved;
+//				if (is_approved == 1)
+//				{
+//					/*status = "approved";*/
+//					temp2 << "approved " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << endl;
+//					//Decrease_Vacant_Spot(serial_num);
+//
+//				}
+//				if (is_approved == 2)
+//				{
+//					status = "decline ";
+//					temp2 << "decline" << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << endl;
+//					Increase_To_Vacant_Spot(serial_num);
+//				}
+//			}
+//			else
+//			{
+//				temp2 << status << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << endl;
+//			}
+//			++i;
+//
+//		}
+//		else
+//		{
+//			temp2 << status << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << endl;
+//
+//		}
+//		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv;
+//
+//	}
+//
+//	temp2.close();
+//	DB_orders.close();
+//	remove("DB_orders.txt");
+//	rename("temp2.txt", "DB_orders.txt");
+//
+//
+//}
 void Print_Orders_Agent() {
 	ifstream DB_orders;
 	DB_orders.open("DB_orders.txt");
@@ -1023,26 +1049,26 @@ void Print_Orders_Agent() {
 		return;
 	}
 	int i = 1;
-	string status, username, serial_num, credit_num, credit_exp, cvv;
+	string status, username, serial_num, credit_num, credit_exp, cvv, passangers;
 	//DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv
-	do
+	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
+	while (!DB_orders.eof())
 	{
 		if (status == "waiting")
 		{
 			cout << "\n\n\n\n\t\t\t\tOrder number " << i << ":" << endl;
-			cout << "\n\n\t\t\t\t" << "Status: " << status << "\n\t\t\t\t" << "Username:" << username << "\tSerial Number:" << serial_num << "\n\t\t\t\tCredit Details:\t" << credit_num << "\t" << credit_exp << "\t" << cvv;
+			cout << "\n\n\t\t\t\t" << "Status: " << status << "\n\t\t\t\t" << "Username:" << username << "\tSerial Number:" << serial_num << "\n\t\t\t\tCredit Number:\t" << credit_num << "\n\t\t\t\tCredit Experation Date: " << credit_exp << "\tCredit CVV: " << cvv << "\n\t\t\t\tNumber of passangers:" << passangers;
 			cout << "\n\t\t\t~------------------------------------------------------------------------------------~" << endl;
 			i++;
 		}
-		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv;
-
-	} while (!DB_orders.eof());
-
+		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
+	}
 	DB_orders.close();
 
 }
 //from here im adding func
-bool Print_Friendlist(string serialNum, string user) {//added
+bool Print_Friendlist(string serialNum, string user)
+{//added
 	int age;
 	string serialN, firstName, lastName, phoneNumber, email, gen, username, seperator;
 
@@ -1068,6 +1094,11 @@ bool Print_Friendlist(string serialNum, string user) {//added
 	if (!flag)
 		return false;
 
+	else //add this to fix print problem 
+	{
+		cout << "\n\t\t\tThe friend list:\n\n";
+	}
+
 	DB_friendList.close();
 	DB_friendList.open("DB_friendList.txt");
 
@@ -1077,30 +1108,9 @@ bool Print_Friendlist(string serialNum, string user) {//added
 			cout << "\t\t\t\t\tFirst Name: " << firstName << "\t Last Name: " << lastName << "\n\n\t\t\t\tPhone Number: " << phoneNumber << " Email: " << email << " Gender: " << gen << " Age: " << age << "\n\t\t" << seperator << endl;
 		DB_friendList >> serialN >> firstName >> lastName >> phoneNumber >> email >> gen >> age >> username >> seperator;
 	} while (!DB_friendList.eof());
-	system("pause");
 	DB_friendList.close();
 }
-//
-//void Print_Friendlist(string serialNum) {//added
-//	int age;
-//	string serialN, firstName, lastName, phoneNumber, email, gen, seperator;
-//
-//	ifstream DB_friendList;
-//	DB_friendList.open("DB_friendList.txt");
-//
-//	if (DB_friendList.fail())
-//	{
-//		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
-//	}
-//	DB_friendList >> serialN >> firstName >> lastName >> phoneNumber >> email >> gen >> age >> seperator;
-//	do {
-//		if (serialN == serialNum)
-//			cout << "\t\t\t\t\tFirst Name: " << firstName << "\t Last Name: " << lastName << "\n\n\t\t\t\tPhone Number: " << phoneNumber << " Email: " << email << " Gender: " << gen << " Age: " << age << "\n\t\t" << seperator << endl;
-//		DB_friendList >> serialN >> firstName >> lastName >> phoneNumber >> email >> gen >> age >> seperator;
-//	} while (!DB_friendList.eof());
-//	system("pause");
-//	DB_friendList.close();
-//}
+
 void Add_To_Friendlist(User use, string serialNum) {//added
 	string Fname = use.firstName;
 	string Lname = use.lastName;
@@ -1162,7 +1172,7 @@ void Make_An_Order(User active_user, string serial_number, int passenger)//added
 
 	} while (cvv.length() != 3);
 	Decrease_Vacant_Spot(serial_number, passenger);
-	DB_orders << "waiting " << active_user.userName << " " << serial_number << " " << credit_num << " " << credit_exp << " " << cvv << endl;
+	DB_orders << "waiting " << active_user.userName << " " << serial_number << " " << credit_num << " " << credit_exp << " " << cvv << " " << passenger << endl;
 	DB_orders.close();
 	cout << "\n\n\n\n\t\t\t\tDo you wish to be in friend list?\n (other people will be able to see your contact details)\n\n\t\t\t\t1- yes\t2- no:\n\n\n\n\t\t\t\t";
 	do
@@ -1429,7 +1439,7 @@ bool Check_County(string country)
 		}
 	}
 	return false;
-}
+}/*
 void Add_Packages()
 {
 	string serial_number, destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price;
@@ -1438,7 +1448,6 @@ void Add_Packages()
 	cin >> destenation;
 	if (destenation[0] >= 'a' && destenation[0] <= 'z')
 	{
-
 		destenation[0] = destenation[0] - 32;
 	}
 	while (!Check_County(destenation))
@@ -1447,12 +1456,10 @@ void Add_Packages()
 		cout << "\n\n\n\t\t\tEnter destenation\n\n\t\t\t";
 		cin >> destenation;
 	}
-
 	cout << "\n\n\n\t\t\tEnter origin\n\n\t\t\t";
 	cin >> origin;
 	if (origin[0] >= 'a' && origin[0] <= 'z')
 	{
-
 		origin[0] = origin[0] - 32;
 	}
 	while (!Check_County(origin))
@@ -1461,7 +1468,6 @@ void Add_Packages()
 		cout << "\n\n\n\t\t\tEnter origin\n\n\t\t\t";
 		cin >> origin;
 	}
-
 	cout << "\n\n\n\t\t\tEnter departure date\n\n\t\t\t";
 	cin >> departure_date;
 	cout << "\n\n\n\t\t\tEnter return date\n\n\t\t\t";
@@ -1481,18 +1487,12 @@ void Add_Packages()
 		for (size_t i = 0; i < vacant_spots.length(); i++)
 		{
 			if (vacant_spots[i] < '0' || vacant_spots[i]>'9') {
-
 				flag = true;
-
-
 			}
 		}
 		if (flag)
 			cout << "\n\n\n\t\t\t\tPlease enter only digits\n\n\n\t\t\t";
-
 	} while (flag);
-
-
 	cout << "\n\n\n\t\t\tEnter price (in dollars)\n\n\t\t\t";
 	do
 	{
@@ -1501,17 +1501,12 @@ void Add_Packages()
 		for (size_t i = 0; i < price.length(); i++)
 		{
 			if (price[i] < '0' || price[i]>'9') {
-
 				flag = true;
-
 			}
 		}
 		if (flag)
 			cout << "\n\n\n\t\t\t\tPlease enter only digits\n\n\n\t\t\t";
-
 	} while (flag);
-
-
 	do
 	{
 		cout << "\n\n\n\t\t\tEnter serial number\n\n\t\t\t";
@@ -1521,23 +1516,46 @@ void Add_Packages()
 			cerr << "\n\n\n\t\t\t This serial number is not avilable.\n\n\a";
 		}
 	} while (!Is_Serial_Num_Avilable(serial_number));
-
-
 	fstream DB_packages;
 	DB_packages.open("DB_packages.txt", ios::app);
-
 	if (DB_packages.fail())
 	{
 		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
 	}
-
 	DB_packages << endl << serial_number << " " << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << vacant_spots << " " << price << "\n";
 	DB_packages << "~------------------------------------------------------------------------------------~" << endl;
-
 	DB_packages.close();
-
-}
+}*/
 //luba
+void Print_Orders_Customer2(User active_user) {
+	ifstream DB_orders;
+	DB_orders.open("DB_orders.txt");
+	if (DB_orders.fail())
+	{
+		cout << "ERROR: no file found\a" << endl;
+		return;
+	}
+	int i = 1;
+	string status, username, serial_num, credit_num, credit_exp, cvv, passangers;
+	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
+	while (!DB_orders.eof())
+	{
+		if (active_user.userName == username)
+		{
+			cout << "\n\n\t" << "Status: " << status << "\t\t\tPassangers: " << passangers << "\n\t\t\t\t";
+			cout << "\n\t\t\t\tOrder number " << i << ":" << endl;
+			Print_By_Serial(serial_num);
+			//cout << "\n\t\t\t~------------------------------------------------------------------------------------~" << endl;
+			i++;
+			//cout << "\n\t\t\tThe friend list:\n\n";
+			/*Print_Friendlist(serial_num, username);*/
+		}
+		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
+
+	}
+	DB_orders.close();
+}
+
 void Print_Orders_Customer(User active_user) {
 	ifstream DB_orders;
 	DB_orders.open("DB_orders.txt");
@@ -1547,25 +1565,50 @@ void Print_Orders_Customer(User active_user) {
 		return;
 	}
 	int i = 1;
-	string status, username, serial_num, credit_num, credit_exp, cvv;
-	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv;
+	bool flag = false;
+	string status, username, serial_num, credit_num, credit_exp, cvv, passangers;
+	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
 	while (!DB_orders.eof())
 	{
 		if (active_user.userName == username)
 		{
+			cout << "\n\n\t" << "Status: " << status << "\t\t\tPassangers: " << passangers << "\n\t\t\t\t";
 			cout << "\n\t\t\t\tOrder number " << i << ":" << endl;
-			cout << "\n\n\t" << "Status: " << status << "\n\t\t\t\t";
 			Print_By_Serial(serial_num);
 			//cout << "\n\t\t\t~------------------------------------------------------------------------------------~" << endl;
 			i++;
-			cout << "\n\t\t\tThe friend list:\n\n";
+			//cout << "\n\t\t\tThe friend list:\n\n";
 			Print_Friendlist(serial_num, username);
+			flag = true;
 		}
-		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv;
+		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
 
 	}
 	DB_orders.close();
 
+	if (flag == false) {
+		cout << "\n\t\t\t\tNo orders found" << endl;
+		//system("pause");
+		return;
+	}
+		
+	int choice;
+	cout << "\n\n\t\tIf you wish to remove one of the orders please select the number (0 to go back):\n\t\t\t\t ";
+	do
+	{
+		cin >> choice;
+		if (choice > i || choice < 0)
+		{
+			cout << "\n\t\t\t\tInvalid choice, Please select from the list above\n\t\t\t\t";
+		}
+	} while (choice > i || choice < 0);
+
+	if (choice == 0)
+		return;
+	Delete_Order_Customer(active_user, choice);
+	system("pause");
+	system("CLS");
+	cout << "\n\n\n\n\t\t\tThe database has been updated succesfully\n\n\n\n\t\t\t";
 
 
 }
@@ -1618,7 +1661,7 @@ void Print_Lead_List() {
 		{
 			cout << "\n\n\n\n\t\t\t\tFirst Name: " << FirstName << "\tLast Name: " << LastName << "\tGender: " << gen << "\n\t\t\t\tEmail: " << email << "\tPhone: " << phone << endl;
 			use.userName = userN;
-			Print_Orders_Customer(use);
+			Print_Orders_Customer2(use);
 		}
 
 
@@ -1636,10 +1679,10 @@ bool Check_If_Ordered(string user_name)
 	{
 		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
 	}
-	string status, username, serial_num, credit_num, credit_exp, cvv;
+	string status, username, serial_num, credit_num, credit_exp, cvv, passangers;
 	do
 	{
-		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv;
+		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
 		if (user_name == username)
 		{
 			DB_orders.close();
@@ -1651,7 +1694,7 @@ bool Check_If_Ordered(string user_name)
 	return false;
 }
 //maor
-void Increase_To_Vacant_Spot(string serialNum)
+void Increase_To_Vacant_Spot(string serialNum, int passangers)
 {
 	fstream DB_packages;
 	DB_packages.open("DB_packages.txt");
@@ -1670,7 +1713,7 @@ void Increase_To_Vacant_Spot(string serialNum)
 	{
 		if (serialNum == serial_number)
 		{
-			temp << serial_number << " " << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << (stoi(vacant_spots) + 1) << " " << price << "\n" << seperator << endl;
+			temp << serial_number << " " << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << (stoi(vacant_spots) + passangers) << " " << price << "\n" << seperator << endl;
 			DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
 		}
 		else
@@ -1848,16 +1891,26 @@ void Vacation_Search(User active_user) {
 	{
 		flag = false;
 		cin >> min_price;
-		for (size_t i = 0; i < min_price.length(); i++)
+		if (stoi(min_price) > stoi(max_price) &&  (stoi(max_price) != 0))
 		{
-			if (min_price[i] < '0' || min_price[i]>'9') {
+			cout << "\n\n\n\t\t\t\tThe min price is invalid\n\n\n\t\t\t\t";
+			flag = true;
+		}
+		else {
+			for (size_t i = 0; i < min_price.length(); i++)
+			{
+				if (min_price[i] < '0' || min_price[i]>'9') {
 
-				flag = true;
-
+					flag = true;
+					cout << "\n\n\n\t\t\t\tYou entered digits\n\n\n\t\t\t\t";
+					break;
+				}
 			}
 		}
 		if (flag)
-			cout << "\n\n\n\t\t\t\tPlease enter only digits\n\n\n\t\t\t\t";
+		{
+			cout << "\n\n\n\t\t\t\tPlease enter again min price\n\n\n\t\t\t\t";
+		}
 
 	} while (flag);
 	system("CLS");
@@ -1866,46 +1919,61 @@ void Vacation_Search(User active_user) {
 		max_price = "99999999";//defualt value
 	if (min_price[0] == '0')
 		min_price = "1";//defualt value
-	int i = 1;
+	int i = 0;
 	flag = false;
 	DB_packages >> serial_number >> destenation >> origin >> departure_date_temp >> return_date_temp >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
-
+	string save_packs[1000];//add this
 	do
 	{
 
 		if (to == destenation && origin == from)
 			if (Date_Is_Inbetween(departure_date, departure_date_temp, return_date) && Date_Is_Inbetween(departure_date, return_date_temp, return_date))
-				if (stoi(passengers) <= stoi(vacant_spots) && stoi(vacant_spots) > 0)
+				if (stoi(passengers) <= stoi(vacant_spots) && stoi(vacant_spots) != 0)
 					if (stoi(min_price) <= stoi(price))
 						if (stoi(max_price) >= stoi(price))
 						{
+							i++;
 							//serials_file << serial_number;
 							cout << "Package number:" << i << "\tSerial Num." << serial_number << endl;
-							cout << "\n\n\tDestenation: " << destenation << "  Origin: " << origin << "  Departure date: " << departure_date;
-							cout << "\n\n\tReturn date: " << return_date << "  Hotel: " << hotel << "  Flight company: " << flight_company << "  Flight number: " << flight_number;
+							cout << "\n\n\tDestenation: " << destenation << "  Origin: " << origin << "  Departure date: " << departure_date_temp;
+							cout << "\n\n\tReturn date: " << return_date_temp << "  Hotel: " << hotel << "  Flight company: " << flight_company << "  Flight number: " << flight_number;
 							cout << "\n\n\tVaccent spots:" << vacant_spots << "  Price (per passenger): " << price << "$" << "\n\n";
 							cout << seperator << endl << endl;
-							i++;
+							save_packs[i] = serial_number;//add this
 							flag = true;
 						}
 		DB_packages >> serial_number >> destenation >> origin >> departure_date_temp >> return_date_temp >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
 
-	} while (!DB_packages.eof());
+	} while (!DB_packages.eof() && i < 1000);
+	DB_packages.close();
 	if (flag)
 	{
 		cout << "\t\tTerms & Conditions: You will receive appropriate advertisements related to your package\n" << endl;
-		cout << "\t\t\t\tPlease pick a package?\n";
-		cin >> user_choice;
+		cout << "\t\t\t\tPlease pick a package? (0 to return)\n\t\t\t\t";
+		
+		do {
+			cin >> user_choice;
+			if (user_choice > i || user_choice < 0) 
+				cout << "\n\n\n\t\t\t\tInvalid input.\n\n\n\t\t\t\t";
+		} while (user_choice > i || user_choice < 0 );
 
-		i = 1;
-		DB_packages.close();
-		DB_packages.open("DB_packages.txt");
+		if (user_choice == 0)
+			return;
+
+		if (user_choice > 0 && user_choice < i+1)//add this
+		{
+
+			Make_An_Order(active_user, save_packs[user_choice], stoi(passengers));
+
+		}
+
+		/*delete this
 		do
 		{
 			DB_packages >> serial_number >> destenation >> origin >> departure_date_temp >> return_date_temp >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
 			if (to == destenation && origin == from)
 				if (Date_Is_Inbetween(departure_date, departure_date_temp, return_date) && Date_Is_Inbetween(departure_date, return_date_temp, return_date))
-					if (stoi(passengers) <= stoi(vacant_spots) && stoi(vacant_spots) > 0)
+					if (stoi(passengers) <= stoi(vacant_spots))
 						if (stoi(min_price) <= stoi(price))
 							if (stoi(max_price) >= stoi(price))
 							{
@@ -1917,7 +1985,7 @@ void Vacation_Search(User active_user) {
 								}
 								++i;
 							}
-		} while (!DB_packages.eof());
+		} while (!DB_packages.eof());*/
 	}
 	else
 	{
@@ -1974,9 +2042,9 @@ bool Date_Is_Inbetween(string datemin, string date, string datemax)
 {
 	int daymin = 0, day = 0, daymax = 0, monthmin = 0, month = 0, monthmax = 0, yearmin = 0, year = 0, yearmax = 0;
 
-	Seperate(&yearmin, &monthmin, &daymin, datemin);
-	Seperate(&year, &month, &day, date);
-	Seperate(&yearmax, &monthmax, &daymax, datemax);
+	Seperate(&yearmin, &daymin, &monthmin, datemin);
+	Seperate(&year, &day, &month, date);
+	Seperate(&yearmax, &daymax, &monthmax, datemax);
 
 	bool min = true, max = true;
 
@@ -2051,21 +2119,21 @@ bool Date_Check(string date)
 		}
 
 	}
-	if (year < 2020)
+	if (year < 2021)
 	{
-		cout << "\n\n\n\n\t\t\t\tinvalid year\a" << endl;
+		cout << "\n\n\n\n\t\t\t\tinvalid year (Cannot choose a date from the past)\a" << endl;
 		return false;
 
 	}
-	else if (year == 2020 && month < (tm.tm_mon + 1))
+	else if (year == 2021 && month < (tm.tm_mon + 1))
 	{
-		cout << "\n\n\n\n\t\t\t\tinvalid month\a" << endl;
+		cout << "\n\n\n\n\t\t\t\tinvalid month (Cannot choose a date from the past)\a" << endl;
 		return false;
 
 	}
-	else if (year == 2020 && month == (tm.tm_mon + 1) && day < tm.tm_mday)
+	else if (year == 2021 && month == (tm.tm_mon + 1) && day < tm.tm_mday)
 	{
-		cout << "\n\n\n\n\t\t\t\tinvalid day\a" << endl;
+		cout << "\n\n\n\n\t\t\t\tinvalid day (Cannot choose a date from the past)\a" << endl;
 		return false;
 
 	}
@@ -2082,4 +2150,419 @@ bool Date_Check2(string date) {
 		}
 	}
 	return true;
+}
+void Sign_Up() //***after fix
+{//new sign up
+	User use;
+	string _age;
+	do {
+		//must enter a new username to continue
+		cout << "\n\n\n\t\t\tEnter user name\n\n\t\t\t";
+		cin >> use.userName;
+		if (Existing_User(use.userName))
+			cout << "\n\n\n\t\t     This user already exist.\a";
+	} while (Existing_User(use.userName));
+	do {
+		//must enter a valid password
+		cout << "\n\n\n\t\t\tEnter password\n\n\t\t\t";
+		cin >> use.password;
+		if (!Strong_Password(use.password))
+			cout << "\n\n\n\t\t\tThis password is not strong enough \n    (Need to include an upper,lower and numiric character and 8 or more charecters).\a\n\t\t\t";
+	} while (!Strong_Password(use.password));
+	cout << "\n\n\n\t\t\tEnter your first name\n\n\t\t\t";
+	cin >> use.firstName;
+	cout << "\n\n\t\t\tEnter your last name\n\n\t\t\t";
+	cin >> use.lastName;
+	do {
+		//must enter 9 characters for valid passport
+		cout << "\n\n\n\t\t\tEnter your passport\n\n\t\t\t";
+		cin >> use.passport;
+		if (!Passport_Check(use.passport))
+			cout << "\n\n\n\t   This passport in not valid, Please enter passport with maximum 8 and minimum 6 charecters.\a";
+	} while (!Passport_Check(use.passport));//passport check
+	cout << "\n\n\t\t\tEnter your age\n\n\t\t\t";
+	bool flag = false;
+	do
+	{
+		flag = false;
+		cin >> _age;
+		for (size_t i = 0; i < _age.length(); i++)
+		{
+			if (_age[i] < '0' || _age[i]>'9') {
+
+				flag = true;
+
+			}
+		}
+
+		if (flag)
+			cout << "\n\n\n\t\t\t\tPlease enter only digits\n\n\n\t\t\t";
+
+	} while (flag);
+	use.age = stoi(_age);
+
+
+
+	string g;//change:int to string
+	do {
+		cout << "\n\n\n\t\t\tEnter gender: 1-male, 2-female\n\n\t\t\t";
+		cin >> g;
+		if (atoi(g.c_str()) == 1)//change g==1 to atoi(g.c_str()) == 1
+			use.gen = M;
+		else if (atoi(g.c_str()) == 2)//change g==1 to atoi(g.c_str()) == 1
+			use.gen = F;
+		else
+			cout << "\n\n\n\t\t\tbad input\n\n\t\t\t";
+	} while (atoi(g.c_str()) != 1 && atoi(g.c_str()) != 2);//change g to atoi(g.c_str()) 
+	cout << "\n\n\n\t\t\tEnter your email\n\n\t\t\t";
+	cin >> use.email;
+	cout << "\n\n\n\t\t\tEnter your phone number\n\n\t\t\t";
+	cin >> use.phoneNumber;
+	use.agent = false;
+	Write_User_To_File(use);
+
+}
+void Add_Agent() {
+	int j=PrintUsersToAdmin();
+	int choice, choice2, i = 0;
+	cout << "Which user do you wish to make an Agent or a Customer? (0 To go back)" ;
+	cin >> choice;
+	if (choice == 0)
+		return;
+	if (choice > j || choice < 0)
+	{
+		cout << "\n\n\n\t\t\t\tYou entered a number not from list, Database has not changed\n\n\n\n\t\t\t\t";
+		system("pause");
+		return;
+
+	}
+	system("CLS");
+	do
+	{
+		cout << "\n\n\n\t\t\t\tDo you want to make this user an agent or a customer user (0 to go back)\n\n\n\t\t\t\t1- an agent \n\n\t\t\t\t2- a costumer \n\n\n\t\t\t\t";
+		cin >> choice2;
+		if (choice2 < 0 && choice2 > 2)
+			cout << "\t\t\t\tThis input is invalid\n\n";
+	} while (choice2 < 0 && choice2 > 2);
+
+	choice -= 1;
+	string agent = "Agent: ";
+	string customer = "Customer: ";
+	ifstream DB_accounts;
+	ofstream temp;
+
+
+	string is_agent, FirstName, lastName, UserName, PW, PP, Gender, Age, Email, PhoneNumber, seperator;
+
+	DB_accounts.open("DB_accounts.txt", ios::out);
+	temp.open("temp.txt", ios::app);
+	DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+
+	while (!DB_accounts.eof()) {
+		if (i == choice)
+		{
+			is_agent = choice2==1? agent: customer;
+			temp << is_agent << FirstName << " " << lastName << " " << UserName << " " << PW << " " << PP << " " << Gender << " " << Age << " " << Email << " " << PhoneNumber << "\n" << seperator << endl;
+
+		}
+		else
+		{
+			temp << is_agent << " " << FirstName << " " << lastName << " " << UserName << " " << PW << " " << PP << " " << Gender << " " << Age << " " << Email << " " << PhoneNumber << "\n" << seperator << endl;
+
+		}
+		DB_accounts >> is_agent >> FirstName >> lastName >> UserName >> PW >> PP >> Gender >> Age >> Email >> PhoneNumber >> seperator;
+		++i;
+	}
+
+	temp.close();
+	DB_accounts.close();
+	
+	
+	cout << "\n\n\n\n\t\t\t\tUpdated databse\n\n\n\n\t\t\t\t";
+
+	system("pause");
+	remove("DB_accounts.txt");
+	rename("temp.txt", "DB_accounts.txt");
+}
+void Delete_Packages() {
+
+	int choice;
+	ifstream DB_packages;
+	DB_packages.open("DB_packages.txt");
+	if (DB_packages.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+
+	string serial_number, destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price, seperator;
+	DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	if (DB_packages.eof())
+	{
+		cerr << "\n\n\t\t\t\t No packages found in database" << endl;
+		system("pause");
+		return;
+	}
+	cout << "\n\n\n\n\t\t\t\tWhich package do you wish to remove (0 To Go back)" << endl;
+	cin >> choice;
+	if (choice == 0)
+		return;
+	ofstream temp;
+	temp.open("temp.txt");
+	int i;
+	for (i = 1; (!DB_packages.eof()); i++)
+	{
+		if (i != choice)
+		{
+			temp << serial_number << " " << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << vacant_spots << " " << price << "\n" << seperator << endl;
+		}
+		DB_packages >> serial_number >> destenation >> origin >> departure_date >> return_date >> hotel >> flight_company >> flight_number >> vacant_spots >> price >> seperator;
+	}
+	temp.close();
+	DB_packages.close();
+	if (choice > i)
+	{
+		cout << "\n\n\n\t\t\t\tThe chosen package does not exist\n\n\t\t\t" << endl;
+		system("pause");
+
+	}
+	else
+	{
+		cout << "\n\n\n\t\t\t\tRemoved package!\n\n\t\t\t" << endl;
+	}
+	remove("DB_packages.txt");
+	rename("temp.txt", "DB_packages.txt");
+	print_packages();
+}
+void Add_Packages()
+{
+	string serial_number, destenation, origin, departure_date, return_date, hotel, flight_company, flight_number, vacant_spots, price;
+	system("CLS");
+	cout << "\n\n\n\t\t\tEnter destenation\n\n\t\t\t";
+	cin >> destenation;
+	if (destenation[0] >= 'a' && destenation[0] <= 'z')
+	{
+
+		destenation[0] = destenation[0] - 32;
+	}
+	while (!Check_County(destenation))
+	{
+		cout << "\n\n\n\t\t\tThe destenation is wrong.\n\t\t\tPlease try again";
+		cout << "\n\n\n\t\t\tEnter destenation\n\n\t\t\t";
+		cin >> destenation;
+	}
+
+	cout << "\n\n\n\t\t\tEnter origin\n\n\t\t\t";
+	cin >> origin;
+	if (origin[0] >= 'a' && origin[0] <= 'z')
+	{
+
+		origin[0] = origin[0] - 32;
+	}
+	while (!Check_County(origin))
+	{
+		cout << "\n\n\n\t\t\tThe origin is wrong.\n\t\t\tPlease try again";
+		cout << "\n\n\n\t\t\tEnter origin\n\n\t\t\t";
+		cin >> origin;
+	}
+
+	cout << "\n\n\n\t\t\tEnter departure date\n\n\t\t\t";
+	cin >> departure_date;
+	cout << "\n\n\n\t\t\tEnter return date\n\n\t\t\t";
+	cin >> return_date;
+	cout << "\n\n\n\t\t\tEnter hotel\n\n\t\t\t";
+	cin >> hotel;
+	cout << "\n\n\n\t\t\tEnter flight company\n\n\t\t\t";
+	cin >> flight_company;
+	cout << "\n\n\n\t\t\tEnter flight number\n\n\t\t\t";
+	cin >> flight_number;
+	cout << "\n\n\n\t\t\tEnter vacant spots\n\n\t\t\t";
+	bool flag = false;
+	do
+	{
+		flag = false;
+		cin >> vacant_spots;
+		for (size_t i = 0; i < vacant_spots.length(); i++)
+		{
+			if (vacant_spots[i] < '0' || vacant_spots[i]>'9') {
+
+				flag = true;
+
+
+			}
+		}
+		if (flag)
+			cout << "\n\n\n\t\t\t\tPlease enter only digits\n\n\n\t\t\t";
+
+	} while (flag);
+
+
+	cout << "\n\n\n\t\t\tEnter price (in dollars)\n\n\t\t\t";
+	do
+	{
+		flag = false;
+		cin >> price;
+		for (size_t i = 0; i < price.length(); i++)
+		{
+			if (price[i] < '0' || price[i]>'9') {
+
+				flag = true;
+
+			}
+		}
+		if (flag)
+			cout << "\n\n\n\t\t\t\tPlease enter only digits\n\n\n\t\t\t";
+
+	} while (flag);
+
+
+	do
+	{
+		cout << "\n\n\n\t\t\tEnter serial number\n\n\t\t\t";
+		cin >> serial_number;
+		if (!Is_Serial_Num_Avilable(serial_number))
+		{
+			cerr << "\n\n\n\t\t\t This serial number is not avilable.\n\n\a";
+		}
+	} while (!Is_Serial_Num_Avilable(serial_number));
+
+
+	fstream DB_packages;
+	DB_packages.open("DB_packages.txt", ios::app);
+
+	if (DB_packages.fail())
+	{
+		cerr << "\n\n\n\t\t\tERROR: The file couldn't be opened.\a\n\n\t\t\t";
+	}
+
+	//DB_packages << endl
+	DB_packages << serial_number << " " << destenation << " " << origin << " " << departure_date << " " << return_date << " " << hotel << " " << flight_company << " " << flight_number << " " << vacant_spots << " " << price << "\n";
+	DB_packages << "------------------------------------------------------------------------------------" << endl;
+
+	DB_packages.close();
+
+}
+void Orders_Confirmation() {
+	system("CLS");
+	//need to open packages DB and take serial number 
+	//need to open text file(DB) for payment and customer username
+	//print the orders
+	Print_Orders_Agent();
+	//cin->choice which one package do you wish to remove
+	int choice, i = 1;
+	bool exist = false; //if the choice exist
+	cout << "\n\n\n\n\t\t\t\tWhich package do you want to approved/decline? (0 to cancel)\n\n\n\n\t\t\t\t";
+	cin >> choice;
+
+
+	if (choice == 0)
+	{
+		return;
+	}
+
+
+	//then need to -1 from package database 
+	//then to replace from waiting to approved or decline in order DB
+	ifstream DB_orders;
+	DB_orders.open("DB_orders.txt");
+	if (DB_orders.fail())
+	{
+		cout << "ERROR: no file found\a" << endl;
+		return;
+	}
+
+	ofstream temp2;
+	temp2.open("temp2.txt", ios::app);
+	string status, username, serial_num, credit_num, credit_exp, cvv, passangers;
+	int is_approved;
+	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
+
+	while (!DB_orders.eof()) {
+		if (status == "waiting")
+		{
+
+			if (i == choice)
+			{
+				exist = true;
+				cout << "\n\t\t\t\t1- To approve\n\t\t\t\t2- To decline\n\t\t\t(other number to skip)" << endl;
+				cin >> is_approved;
+				if (is_approved == 1)
+				{
+					// status = "approved"; 
+					temp2 << "approved " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << " " << passangers << endl;
+					//Decrease_Vacant_Spot(serial_num);
+
+				}
+				if (is_approved == 2)
+				{
+					status = "decline ";
+					temp2 << "decline" << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << " " << passangers << endl;
+					Increase_To_Vacant_Spot(serial_num, stoi(passangers));
+				}
+			}
+			else
+			{
+				temp2 << status << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << " " << passangers << endl;
+			}
+			++i;
+
+		}
+		else
+		{
+			temp2 << status << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << " " << passangers << endl;
+
+		}
+		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
+
+	}
+	if (exist == false)
+	{
+		cerr << "\n\n\n\t\t\t\tERROR: This choice is invalid \n\n\n\n\t\t\t\t\a" << endl;
+		system("pause");
+	}
+
+	temp2.close();
+	DB_orders.close();
+	remove("DB_orders.txt");
+	rename("temp2.txt", "DB_orders.txt");
+
+
+}
+
+void Delete_Order_Customer(User active_user, int choice)
+{
+
+	ifstream DB_orders;
+	ofstream temp_2;
+	temp_2.open("temp2.txt");
+	DB_orders.open("DB_orders.txt");
+	if (DB_orders.fail())
+	{
+		cout << "ERROR: no file found\a" << endl;
+		return;
+	}
+	int i = 1;
+	string status, username, serial_num, credit_num, credit_exp, cvv, passangers;
+	DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
+	while (!DB_orders.eof())
+	{
+		if (active_user.userName == username)
+		{
+			if (i != choice)//copy every order except users choice
+				temp_2 << status << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << " " << passangers << endl;
+			else if (status != "decline")
+				Increase_To_Vacant_Spot(serial_num, stoi(passangers));
+			i++;
+		}
+		else
+			temp_2 << status << " " << username << " " << serial_num << " " << credit_num << " " << credit_exp << " " << cvv << " " << passangers << endl;
+
+		DB_orders >> status >> username >> serial_num >> credit_num >> credit_exp >> cvv >> passangers;
+	}
+
+	temp_2.close();
+	DB_orders.close();
+
+	remove("DB_orders.txt");
+	rename("temp2.txt", "DB_orders.txt");
+
 }
