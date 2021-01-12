@@ -1,10 +1,5 @@
-approved maor 741852 credit_number credit_exp_date ccv
-approved active_user.name package_serial_number credit_number credit_exp_date ccv
-decline active_user.name package_serial_number credit_number credit_exp_date ccv
-approve active_user.name package_serial_number credit_number credit_exp_date ccv
-approve yoni1 741852 134123 123/2 555
-approve yoni1 741852 123123 123 555
-decline maor 741852 123123 123 555
-approved jojo 741852 123123 123 555
-waiting luba 7894 1234123412341234 17/20 151
-waiting jojo 7894 1234123412341234 2/2 123
+waiting jojo 606060 9999999999999999 12/12 123 3
+waiting jojo 606060 1231231231231231 12 231 1
+waiting jojo 606060 1234123412341234 12/12 123 1
+waiting Harel1234 606060 1234561234561234 12/1 512 2
+waiting harel 606060 1234123412341234 2/24 980 2
