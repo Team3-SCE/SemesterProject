@@ -1,6 +1,6 @@
 {
   "name": "Semester Project",
-  "version": "0.3.3",
+  "version": "1.0",
   "description": "SCE project demonstr.",
   "manifest_version": 2,
   "permissions": ["activeTab"],
