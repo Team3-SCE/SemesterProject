@@ -1,0 +1,14 @@
+{
+  "name": "Semester Project",
+  "version": "0.3.3",
+  "description": "SCE project demonstr.",
+  "manifest_version": 2,
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*/projects/*"],
+      "css": ["styles.css"],
+      "js": ["contentScript.js"]
+    }
+  ]
+}
